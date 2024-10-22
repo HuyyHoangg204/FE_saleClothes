@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
-const forms = require("@tailwindcss/forms");
-const plugin = require("tailwindcss/plugin"); // Đảm bảo bạn đã import plugin này
+import forms from "@tailwindcss/forms";
+import plugin from "tailwindcss/plugin"; // Đảm bảo bạn đã import plugin này
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   darkMode: "class",
