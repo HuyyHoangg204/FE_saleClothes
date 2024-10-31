@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { downloadAllImage, downloadAllImageFromServerBySpMa } from "../redux/apiRequest";
+import axios from "axios";
 
 function ProductTable({
   allProduct,
@@ -20,7 +21,6 @@ function ProductTable({
   useEffect(() => {
     setAccessToken(localStorage.getItem("token"));
   });
-
   const totalPages = Math.ceil(allProduct.length / itemsPerPage);
 
   const startIndex = (currentPage - 1) * itemsPerPage;
