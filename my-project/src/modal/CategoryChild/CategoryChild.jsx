@@ -24,11 +24,11 @@ function CategoryChild() {
         </div>
         <div className="flex justify-around space-x-3">
             <div className="flex h-full items-center space-x-2">
-            <img className="object-cover h-[267px] w-[201px]" src="images/maubenam.webp" alt="" />
-            <img className="object-cover h-[267px] w-[201px]" src="images/maubenam1.webp" alt="" />
+            <img className="object-cover h-[267px] w-[201px]" src="/images/maubenam.webp" alt="" />
+            <img className="object-cover h-[267px] w-[201px]" src="/images/maubenam1.webp" alt="" />
             <div style={{width:'1px'}} className=" h-60  bg-black opacity-20 mx-2"></div>
-            <img className="object-cover h-[267px] w-[201px]" src="images/maubenu.webp" alt="" />
-            <img className="object-cover h-[267px] w-[201px]" src="images/maubenu1.webp" alt="" />
+            <img className="object-cover h-[267px] w-[201px]" src="/images/maubenu.webp" alt="" />
+            <img className="object-cover h-[267px] w-[201px]" src="/images/maubenu1.webp" alt="" />
             </div>
         </div>
     </div> 

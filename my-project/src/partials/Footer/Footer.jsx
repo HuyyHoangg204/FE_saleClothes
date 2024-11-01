@@ -95,14 +95,14 @@ function Footer() {
           <div className="w-[180px]">
             <img
               className="w-full object-cover my-2"
-              src="images/googleplay.png"
+              src="/images/googleplay.png"
               alt=""
             />
           </div>
           <div>
             <img
               className="w-full object-cover"
-              src="images/appstore.png"
+              src="/images/appstore.png"
               alt=""
             />
           </div>

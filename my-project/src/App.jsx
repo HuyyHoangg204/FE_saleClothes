@@ -7,6 +7,7 @@ import Dashboard from "./pages/Dashboard.jsx";
 import "./css/style.css";
 import "./charts/ChartjsConfig";
 import Home from "./pages/home/Home.jsx";
+import SalePages from "./pages/sale/SalePages.jsx";
 
 function App() {
   const location = useLocation();
@@ -24,6 +25,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/admin" element={<Dashboard />} />
         <Route path="/" element={<Home />} />
+        <Route path="/nam/ao-so-mi" element={<SalePages breadcrumb = {['Trang chủ', 'Nam', 'Áo sơ mi']}/>}/>
       </Routes>
     </div>
   );

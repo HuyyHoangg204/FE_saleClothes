@@ -14,6 +14,8 @@ import iconGoogle from './iconGoogle.png'
 import iconInstagram from './iconInstagram.jpg'
 import iconTikTok from './iconTikTok.png'
 import iconYoutube from './iconYoutube.png'
+import iconPlus from './iconPlus.svg'
+import iconDropDownArrow from './iconDropDownArrow.svg'
 
 const icons = {
     iconSearch: iconSearch,
@@ -31,7 +33,9 @@ const icons = {
     iconGoogle: iconGoogle,
     iconInstagram: iconInstagram,
     iconTikTok: iconTikTok,
-    iconYoutube: iconYoutube
+    iconYoutube: iconYoutube,
+    iconPlus: iconPlus,
+    iconDropDownArrow: iconDropDownArrow,
 
 };
 

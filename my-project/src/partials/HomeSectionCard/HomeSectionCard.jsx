@@ -4,7 +4,7 @@ function HomeSectionCard() {
   return (
     <div className="w-[246px] h-[490px] bg-white">
       <div className="cursor-pointer h-[369px]">
-        <img className="h-full w-full object-cover" src="images/maunu1.webp" alt="" />
+        <img className="h-full w-full object-cover" src="/images/maunu1.webp" alt="" />
       </div>
       <div className="">
         <div className="flex justify-between mt-5">
