@@ -1,14 +1,18 @@
 import icons from "../assets/icons";
 import HomeSectionCard from "../partials/HomeSectionCard/HomeSectionCard";
 import { useEffect, useState } from "react";
+import SortProduct from "./SortProduct";
 
-function MainProduct({title}) {
+function MainProduct({ title }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [show3Dot, setShow3Dot] = useState(true);
+  const [showSortProduct, setSortProduct] = useState(false);
+  const [isIconRotated, setIsIconRotated] = useState(false);
   const itemsPerPage = 28;
   const items = [
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
   ];
   const totalPages = Math.ceil(items.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -58,16 +62,30 @@ function MainProduct({title}) {
     } else setShow3Dot(true);
   });
 
+  const toggleSortProduct = () => {
+    setSortProduct((prev) => !prev);
+    setIsIconRotated((prev) => !prev); // Thay đổi trạng thái quay của biểu tượng
+  };
+
   return (
+    //
     <div className="w-full ml-12">
       <div className="flex justify-between items-center">
-        <span className="font-sans font-semibold text-[22px]">
-          {title}
-        </span>
-        <div className="flex justify-around items-center border rounded-3xl w-[240px] h-[42px]">
+        <span className="font-sans font-semibold text-[22px]">{title}</span>
+        <div
+          onClick={toggleSortProduct}
+          className="flex justify-around items-center border rounded-3xl w-[240px] h-[42px] relative cursor-pointer"
+        >
           <span>Sắp xếp theo</span>
-          <img className="w-9 h-9" src={icons.iconDropDownArrow} alt="" />
+          <img
+            className={`w-9 h-9 transition-transform duration-300 ${
+              isIconRotated ? "rotate-180" : ""
+            }`}
+            src={icons.iconDropDownArrow}
+            alt=""
+          />
         </div>
+        {showSortProduct && <SortProduct />}
       </div>
       <div className="flex flex-wrap w-full justify-between mt-5 gap-y-10">
         {selectedProducts.map((item, index) => (
