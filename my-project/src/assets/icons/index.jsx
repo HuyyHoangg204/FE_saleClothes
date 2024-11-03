@@ -20,6 +20,11 @@ import iconAdd from './iconAdd.svg'
 import iconRemove from './iconRemove.svg'
 import iconPlus from './iconPlus.svg'
 import iconDropDownArrow from './iconDropDownArrow.svg'
+import iconAddress from './iconAddress.svg'
+import iconBookAndPencil from './iconBookAndPencil.svg'
+import iconDone from "./iconDone.svg";
+import iconPay from './iconPay.svg';
+import iconBasket from './iconBasket.svg';
 
 const icons = {
     iconSearch: iconSearch,
@@ -44,6 +49,11 @@ const icons = {
     iconRemove: iconRemove,
     iconPlus: iconPlus,
     iconDropDownArrow: iconDropDownArrow,
+    iconAddress: iconAddress,
+    iconBookAndPencil: iconBookAndPencil,
+    iconDone: iconDone,
+    iconPay: iconPay,
+    iconBasket: iconBasket,
 };
 
 

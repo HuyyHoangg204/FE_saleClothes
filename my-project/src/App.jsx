@@ -4,6 +4,8 @@ import { useEffect } from "react";
 import Login from "~/pages/Login/Login.jsx";
 import Register from "~/pages/Register/Register.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
+import Home from "./pages/home/Home.jsx";
+import Order from "./pages/order/Order.jsx";
 import "./css/style.css";
 import "./charts/ChartjsConfig";
 import Home from "./pages/home/Home.jsx";
@@ -25,6 +27,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/admin" element={<Dashboard />} />
+        <Route path="/order" element={<Order />} />
         <Route path="/" element={<Home />} />
         <Route path="/nam/ao-so-mi" element={<SalePages breadcrumb = {['Trang chủ', 'Nam', 'Áo sơ mi']}/>}/>
       </Routes>
