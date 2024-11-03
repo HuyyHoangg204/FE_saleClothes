@@ -1,0 +1,23 @@
+/* styles.css hoặc một file CSS khác mà bạn sử dụng */
+.fade-enter {
+    opacity: 0;
+    transform: translateY(-10px); /* Đẩy lên một chút */
+  }
+  
+  .fade-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.3s, transform 0.3s; /* Thời gian hiệu ứng */
+  }
+  
+  .fade-exit {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .fade-exit-active {
+    opacity: 0;
+    transform: translateY(-10px); /* Đẩy lên một chút khi thoát */
+    transition: opacity 0.3s, transform 0.3s; /* Thời gian hiệu ứng */
+  }
+  

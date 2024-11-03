@@ -4,7 +4,7 @@ function HomeSectionCard() {
   return (
     <div className="w-[246px] h-[490px] bg-white">
       <div className="cursor-pointer h-[369px]">
-        <img className="h-full w-full object-cover" src="images/maunu1.webp" alt="" />
+        <img className="h-full w-full object-cover" src="/images/maunu1.webp" alt="" />
       </div>
       <div className="">
         <div className="flex justify-between mt-5">
@@ -20,6 +20,10 @@ function HomeSectionCard() {
         <div className="font-sans font-light text-[18px] mb-2">Chân váy bút chì</div>
         <div className="flex items-center justify-between">
           <span className="font-sans font-semibold text-xl">299.000 đ</span>
+          <div className="relative">
+            <span className="font-medium opacity-50 text-sm">1.000.000đ</span>
+            <div className="h-[1px] w-full bg-black opacity-40 absolute z-5 top-1/2"></div>
+          </div>
           <img className="w-10 h-10  cursor-pointer" src={icons.iconAddCart} alt="" />
         </div>
       </div>

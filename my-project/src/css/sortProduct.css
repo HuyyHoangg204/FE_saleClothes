@@ -1,0 +1,15 @@
+@keyframes slideDown {
+    from {
+      transform: translateY(-20px); /* Bắt đầu từ vị trí trên */
+      opacity: 0; /* Bắt đầu với độ mờ là 0 */
+    }
+    to {
+      transform: translateY(0); /* Kết thúc tại vị trí ban đầu */
+      opacity: 1; /* Kết thúc với độ mờ là 1 */
+    }
+  }
+  
+  .slide-down {
+    animation: slideDown 0.3s ease forwards; /* Thêm animation vào class */
+  }
+  

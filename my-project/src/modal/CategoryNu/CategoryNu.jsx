@@ -86,8 +86,8 @@ function CategoryNu() {
       </div>
       <div className="flex justify-around space-x-3">
         
-        <img className="object-cover w-[201px] h-[267px]" src="images/maunu1.webp" alt="" />
-        <img className="object-cover w-[201px] h-[267px]" src="images/maunu2.webp" alt="" />
+        <img className="object-cover w-[201px] h-[267px]" src="/images/maunu1.webp" alt="" />
+        <img className="object-cover w-[201px] h-[267px]" src="/images/maunu2.webp" alt="" />
         
       </div>
     </div>

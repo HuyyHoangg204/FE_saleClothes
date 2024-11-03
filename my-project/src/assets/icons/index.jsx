@@ -18,6 +18,8 @@ import iconClose from './iconClose.svg'
 import iconMore from './iconMore.svg'
 import iconAdd from './iconAdd.svg'
 import iconRemove from './iconRemove.svg'
+import iconPlus from './iconPlus.svg'
+import iconDropDownArrow from './iconDropDownArrow.svg'
 
 const icons = {
     iconSearch: iconSearch,
@@ -40,7 +42,8 @@ const icons = {
     iconMore: iconMore,
     iconAdd: iconAdd,
     iconRemove: iconRemove,
-
+    iconPlus: iconPlus,
+    iconDropDownArrow: iconDropDownArrow,
 };
 
 

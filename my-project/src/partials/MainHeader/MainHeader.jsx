@@ -33,11 +33,11 @@ function MainHeader() {
     <Fragment>
       <header className="fixed top-0 z-10 h-24 w-full flex bg-white justify-between items-center  px-28 font-sans text-l border-b shadow">
       <div className="flex items-center space-x-12 relative">
-        <div>
+        <div >
           <a href="/">
             <img
               className="w-40 h-24 object-cover "
-              src="images/Harious-store.png"
+              src="/images/Harious-store.png"
               alt=""
             />
           </a>
