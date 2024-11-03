@@ -7,6 +7,7 @@ import Dashboard from "./pages/Dashboard.jsx";
 import "./css/style.css";
 import "./charts/ChartjsConfig";
 import Home from "./pages/home/Home.jsx";
+import Cart from "./layouts/Cart.jsx";
 
 function App() {
   const location = useLocation();

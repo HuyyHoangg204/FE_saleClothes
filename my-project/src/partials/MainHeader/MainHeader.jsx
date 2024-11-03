@@ -1,9 +1,21 @@
+import { Fragment, useEffect, useState } from "react";
 import icons from "../../assets/icons";
 import CategoryChild from "../../modal/CategoryChild/CategoryChild";
 import CategoryNam from "../../modal/CategoryNam/CategoryNam";
 import CategoryNu from "../../modal/CategoryNu/CategoryNu";
+import Cart from "../../layouts/Cart";
+import '~/css/Cart.css'
 
 function MainHeader() {
+  const [displayCart, setDisplayCart] = useState(false)
+
+  // Handle popup cart 
+  const toggleShowCart = () => {
+    setDisplayCart((true));
+  }
+  const toggleHideCart = () => {
+    setDisplayCart(false);
+  }
   const data = [
     {
       id: 1,
@@ -18,7 +30,8 @@ function MainHeader() {
   ];
 
   return (
-    <header className="fixed top-0 z-10 h-24 w-full flex bg-white justify-between items-center  px-28 font-sans text-l border-b shadow">
+    <Fragment>
+      <header className="fixed top-0 z-10 h-24 w-full flex bg-white justify-between items-center  px-28 font-sans text-l border-b shadow">
       <div className="flex items-center space-x-12 relative">
         <div>
           <a href="/">
@@ -76,18 +89,22 @@ function MainHeader() {
           />
         </div>
         <div className="flex items-center space-x-8">
-          <a className="relative" href="/">
-            <img className="w-12 h-8" src={icons.iconShoppingCart} alt="" />
+          <div onClick={toggleShowCart} className="relative cursor-pointer">
+            <img  className="w-12 h-8" src={icons.iconShoppingCart} alt="" />
             <div className="absolute top-[-4px] right-[-4px] bg-red-700 rounded-full w-5 text-white text-xs items-center  justify-center flex">
               0
             </div>
-          </a>
+          </div>
           <a href="/">
             <img className="w-12 h-8" src={icons.iconAccount} alt="" />
           </a>
         </div>
       </div>
     </header>
+    {
+      displayCart && (<Cart toggleHideCart={toggleHideCart}/>)
+    }
+    </Fragment>
   );
 }
 

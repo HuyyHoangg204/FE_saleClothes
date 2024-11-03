@@ -1,0 +1,31 @@
+@keyframes slide-in {
+    from {
+      transform: translateX(100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+  
+  @keyframes slide-out {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(100%);
+    }
+  }
+  
+  .cart-container {
+    animation-duration: 0.3s;
+    animation-fill-mode: forwards;
+  }
+  
+  .animate-cart {
+    animation-name: slide-in;
+  }
+  
+  .cart-hide {
+    animation-name: slide-out;
+  }
+  

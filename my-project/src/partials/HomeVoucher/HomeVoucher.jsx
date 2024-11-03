@@ -32,7 +32,7 @@ function HomeVoucher() {
         <span className="text-3xl font-sans font-normal py-4">Ngập tràn Voucher</span>
         <div className="flex flex-row py-4 space-x-14 mb-4">
             {
-                vouchers.slice(0,3).map((voucher,index) => <Voucher ten = {voucher.name} noidung={voucher.noidung} hsd={voucher.hsd}/>)
+                vouchers.slice(0,3).map((voucher,index) => <Voucher key={index} ten = {voucher.name} noidung={voucher.noidung} hsd={voucher.hsd}/>)
             }
         </div>
         <ButtonSeeMore/>
