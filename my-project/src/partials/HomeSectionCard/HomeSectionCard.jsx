@@ -1,6 +1,18 @@
+import { useEffect, useState } from "react";
 import icons from "../../assets/icons";
+import ModalAddCart from "../../modal/ModalAddCart/ModalAddCart";
 
 function HomeSectionCard() {
+  const [showModalAddCard, setShowModalAddCard] = useState(false);
+
+  const toggleShowModalAddCard = () => {
+    setShowModalAddCard((prev) => !prev)
+  }
+  useEffect(() => {
+    console.log(showModalAddCard)
+  },[showModalAddCard])
+
+
   return (
     <div className="w-[246px] h-[490px] bg-white">
       <div className="cursor-pointer h-[369px]">
@@ -24,7 +36,10 @@ function HomeSectionCard() {
             <span className="font-medium opacity-50 text-sm">1.000.000đ</span>
             <div className="h-[1px] w-full bg-black opacity-40 absolute z-5 top-1/2"></div>
           </div>
-          <img className="w-10 h-10  cursor-pointer" src={icons.iconAddCart} alt="" />
+          <div className="relative">
+          <img onClick={toggleShowModalAddCard} className="w-10 h-10  cursor-pointer" src={icons.iconAddCart} alt="" />
+          {showModalAddCard && <ModalAddCart showModalAddCard={showModalAddCard}/>}
+          </div>
         </div>
       </div>
     </div>

@@ -1,0 +1,29 @@
+@keyframes slideUp {
+    from {
+      transform: translateY(30px); /* Bắt đầu từ vị trí trên */
+      opacity: 0; /* Bắt đầu với độ mờ là 0 */
+    }
+    to {
+      transform: translateY(0); /* Kết thúc tại vị trí ban đầu */
+      opacity: 1; /* Kết thúc với độ mờ là 1 */
+    }
+  }
+  @keyframes slideDown {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateY(40px);
+        opacity: 0;
+    }
+  }
+  
+  .slide-up {
+    animation: slideUp 0.3s ease forwards; /* Thêm animation vào class */
+  }
+
+  .slide-down {
+    animation: slideDown 0.3s ease forwards;
+  }
+  

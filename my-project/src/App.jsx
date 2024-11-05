@@ -8,7 +8,6 @@ import Home from "./pages/home/Home.jsx";
 import Order from "./pages/order/Order.jsx";
 import "./css/style.css";
 import "./charts/ChartjsConfig";
-import Home from "./pages/home/Home.jsx";
 import SalePages from "./pages/sale/SalePages.jsx";
 
 

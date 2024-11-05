@@ -44,10 +44,10 @@ import {
   getAllImageProductFailed,
 } from "./productSlice";
 
-//  const REST_AUTH_BASE_URL = "http://51.79.167.161:8081/auth";
-//  const REST_API_BASE_URL = "http://51.79.167.161:8081/api";
-const REST_AUTH_BASE_URL = "http://localhost:8081/auth";
-const REST_API_BASE_URL = "http://localhost:8081/api";
+ const REST_AUTH_BASE_URL = "http://51.79.167.161:8081/auth";
+ const REST_API_BASE_URL = "http://51.79.167.161:8081/api";
+// const REST_AUTH_BASE_URL = "http://localhost:8081/auth";
+// const REST_API_BASE_URL = "http://localhost:8081/api";
 
 //Login
 export const loginUser = async (user, dispatch, navigate) => {
@@ -138,7 +138,7 @@ export const deleteUser = async (token, dispatch, username) => {
 //refresh token
 export const refreshToken = async (token) => {
   try {
-    const res = await axios.post("http://localhost:8081/auth/refresh", {
+    const res = await axios.post("http://51.79.167.161:8081/auth/refresh", {
       token,
     });
     return res.data;
@@ -208,7 +208,7 @@ export const uploadImageToFileSystem = async (selectedFile, spMa) => {
   formData.append("spMa", spMa);
   try {
     const res = await axiosInstance.post(
-      "http://localhost:8081/image/fileSystem",
+      "http://51.79.167.161:8081/image/fileSystem",
       formData,
       {
         headers: {
@@ -230,7 +230,7 @@ export const downloadAllImageFromServerBySpMa = async (
   dispatch(getImageProductStart());
   try {
     const res = await axiosInstance.get(
-      `http://localhost:8081/image/fileSystems/${spMa}`,
+      `http://51.79.167.161:8081/image/fileSystems/${spMa}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -247,7 +247,7 @@ export const downloadAllImageFromServerBySpMa = async (
 export const downloadAllImage = async (token, dispatch) => {
   try {
     dispatch(getAllImageProductStart());
-    const response = await axiosInstance.get("http://localhost:8081/images", {
+    const response = await axiosInstance.get("http://51.79.167.161:8081/images", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -331,7 +331,7 @@ try {
     formData.append("files",file)
   })
   formData.append("spMa",spMa)
-  const res = await axiosInstance.post("http://localhost:8081/images/fileSystem",formData, {
+  const res = await axiosInstance.post("http://51.79.167.161:8081/images/fileSystem",formData, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -345,7 +345,7 @@ try {
 // delete image product =============================================================
 export const deleteImages = async (names,spMa,token) => {
   try {
-    await axiosInstance.delete(`http://localhost:8081/image/fileSystems/${spMa}`, {
+    await axiosInstance.delete(`http://51.79.167.161:8081/image/fileSystems/${spMa}`, {
       data: names,
       headers: {
         Authorization: `Bearer ${token}`,
