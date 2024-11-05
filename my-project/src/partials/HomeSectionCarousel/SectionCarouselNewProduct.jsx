@@ -37,7 +37,7 @@ function SectionCaroselNewProduct() {
           Sản phẩm mới
         </span>
       </div>
-      <div className="relative p-4">
+      <div className="relative p-4 overflow-visible">
         <AliceCarousel
           ref={carouselRef}
           mouseTracking
