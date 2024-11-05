@@ -1,6 +1,7 @@
 import React from 'react';
 import { useState } from 'react';
 import icon from '../../assets/icons/index.jsx';
+import MainHeader from '../../partials/MainHeader/MainHeader.jsx';
 
 function Order() {
     const [selectedOption, setSelectedOption] = useState('');
@@ -11,10 +12,11 @@ function Order() {
     return (
         <div className="w-[100%] bg-[#f5f5f5]">
             {/* Header */}
-            <div className="bg-white w-full h-[63px] fixed top-0 left-0 z-10 shadow"></div>
+            <MainHeader />
+            <div className="h-24"></div>
 
             {/* Progress bar */}
-            <div className="flex items-center justify-center mt-[50px] mb-[70px] pt-[63px]">
+            <div className="flex items-center justify-center mt-[50px] mb-[70px]">
                 <div className="w-[20px] h-[20px] rounded-full bg-black relative">
                     <div className="text-base text-center absolute top-[21px] w-[103px] left-[-40px]">Giỏ hàng</div>
                 </div>
