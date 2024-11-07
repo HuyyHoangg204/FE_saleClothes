@@ -102,7 +102,7 @@ function Cart({toggleHideCart}) {
           </div>
           <div className="flex justify-center">
             <button className="w-full h-[58px] bg-black text-white text-center">
-              THANH TOÁN
+            <a href="/order">THANH TOÁN</a>
             </button>
           </div>
         </div>

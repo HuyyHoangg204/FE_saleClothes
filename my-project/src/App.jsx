@@ -29,6 +29,8 @@ function App() {
         <Route path="/order" element={<Order />} />
         <Route path="/" element={<Home />} />
         <Route path="/nam/ao-so-mi" element={<SalePages breadcrumb = {['Trang chủ', 'Nam', 'Áo sơ mi']}/>}/>
+        <Route path= "/order" element= {<Order/>}/>
+        
       </Routes>
     </div>
   );
