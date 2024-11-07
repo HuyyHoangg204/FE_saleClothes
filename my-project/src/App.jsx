@@ -9,6 +9,7 @@ import Order from "./pages/order/Order.jsx";
 import "./css/style.css";
 import "./charts/ChartjsConfig";
 import SalePages from "./pages/sale/SalePages.jsx";
+import InfoUser from "./pages/infoUser/InfoUser.jsx";
 
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/admin" element={<Dashboard />} />
         <Route path="/order" element={<Order />} />
+        <Route path="/info-user" element={<InfoUser breadcrumb = {['TRANG CHỦ', 'THÔNG TIN CÁ NHÂN']}/>} />
         <Route path="/" element={<Home />} />
         <Route path="/nam/ao-so-mi" element={<SalePages breadcrumb = {['Trang chủ', 'Nam', 'Áo sơ mi']}/>}/>
         <Route path= "/order" element= {<Order/>}/>

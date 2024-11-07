@@ -95,7 +95,7 @@ function MainHeader() {
               0
             </div>
           </div>
-          <a href="/">
+          <a href="/info-user">
             <img className="w-12 h-8" src={icons.iconAccount} alt="" />
           </a>
         </div>

@@ -25,6 +25,11 @@ import iconBookAndPencil from './iconBookAndPencil.svg'
 import iconDone from "./iconDone.svg";
 import iconPay from './iconPay.svg';
 import iconBasket from './iconBasket.svg';
+import iconMoveTicket from './iconMovieTicket.svg';
+import iconLogout from './iconLogout.svg';
+import iconEye from './iconEye.svg';
+import iconProduct from './iconProduct.svg';
+import iconCalendar from './iconCalendar.svg';
 
 const icons = {
     iconSearch: iconSearch,
@@ -54,6 +59,11 @@ const icons = {
     iconDone: iconDone,
     iconPay: iconPay,
     iconBasket: iconBasket,
+    iconMoveTicket: iconMoveTicket,
+    iconLogout: iconLogout,
+    iconEye: iconEye,
+    iconProduct: iconProduct,
+    iconCalendar: iconCalendar,
 };
 
 
