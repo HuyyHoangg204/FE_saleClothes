@@ -10,6 +10,7 @@ import SlideFavoriteUser from '../../components/infoUser/SlideFavoriteUser.jsx';
 import SlideViewedUser from '../../components/infoUser/SlideViewedUser.jsx';
 import SlideVoucherUser from '../../components/infoUser/SlideVoucherUser.jsx';
 import SlideOrderDetail from '../../components/infoUser/SlideOrderDetail.jsx';
+import Footer from '../../partials/Footer/Footer.jsx';
 
 function InfoUser({ breadcrumb }) {
     // State để quản lý trang hiện tại
@@ -68,6 +69,8 @@ function InfoUser({ breadcrumb }) {
                 {currentPage === 'voucherUser' && <SlideVoucherUser />}
             </div>
             <div className="h-24"></div>
+            {/* Footer */}
+            <Footer/>
         </div>
     );
 }

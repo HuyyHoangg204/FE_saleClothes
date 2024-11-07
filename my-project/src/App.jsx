@@ -28,11 +28,10 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/admin" element={<Dashboard />} />
         <Route path="/order" element={<Order />} />
-        <Route path="/info-user" element={<InfoUser breadcrumb = {['TRANG CHỦ', 'THÔNG TIN CÁ NHÂN']}/>} />
+        <Route path="/my-account" element={<InfoUser breadcrumb = {['TRANG CHỦ', 'THÔNG TIN CÁ NHÂN']}/>} />
         <Route path="/" element={<Home />} />
         <Route path="/nam/ao-so-mi" element={<SalePages breadcrumb = {['Trang chủ', 'Nam', 'Áo sơ mi']}/>}/>
         <Route path= "/order" element= {<Order/>}/>
-        
       </Routes>
     </div>
   );
