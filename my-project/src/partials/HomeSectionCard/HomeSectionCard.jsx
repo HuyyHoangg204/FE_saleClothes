@@ -8,11 +8,6 @@ function HomeSectionCard() {
   const toggleShowModalAddCard = () => {
     setShowModalAddCard((prev) => !prev)
   }
-  useEffect(() => {
-    console.log(showModalAddCard)
-  },[showModalAddCard])
-
-
   return (
     <div className="w-[246px] h-[490px] bg-white">
       <div className="cursor-pointer h-[369px]">
