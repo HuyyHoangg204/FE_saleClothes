@@ -4,7 +4,7 @@ import MaleSize from './MaleSize';
 import FemaleSize from './FemaleSize';
 import ChildrenSize from './ChildrenSize';
 
-function InfoSizeModal() {
+function InfoSizeModal({handleCloseModalSize}) {
     const [showMaleSize, setShowMaleSize] = useState(true);
     const [showFeMaleSize, setShowFeMaleSize] = useState(false);
     const [showChildrenSize, setShowChildrenSize] = useState(false);
@@ -27,10 +27,10 @@ function InfoSizeModal() {
 
     return (
         // Overlay
-        <div className="fixed inset-0 flex justify-center z-10 w-full h-full bg-black bg-opacity-50">
-            <div className="w-[1170px] relative bg-white flex flex-col items-center py-[80px] px-[40px] h-full overflow-y-auto">
+        <div onClick={handleCloseModalSize} className="fixed inset-0 flex justify-center z-10 w-full h-full bg-black bg-opacity-50">
+            <div onClick={(e) => e.stopPropagation()} className="w-[1170px] relative bg-white flex flex-col items-center py-[80px] px-[40px] h-full overflow-y-auto">
                 {/* Button close */}
-                <div className="absolute right-4 top-4 p-3 cursor-pointer">
+                <div onClick={handleCloseModalSize} className="absolute right-4 top-4 p-3 cursor-pointer">
                     <img className="w-6 h-6" src={icons.iconClose} alt="" />
                 </div>
                 {/* Header modal */}

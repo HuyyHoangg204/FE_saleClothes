@@ -10,6 +10,7 @@ import "./css/style.css";
 import "./charts/ChartjsConfig";
 import SalePages from "./pages/sale/SalePages.jsx";
 import InfoUser from "./pages/infoUser/InfoUser.jsx";
+import MainProduct from "./pages/product/MainProduct.jsx";
 
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
         <Route path="/order" element={<Order />} />
         <Route path="/my-account" element={<InfoUser breadcrumb = {['TRANG CHỦ', 'THÔNG TIN CÁ NHÂN']}/>} />
         <Route path="/" element={<Home />} />
+        <Route path="/product" element={<MainProduct/>} />
         <Route path="/nam/ao-so-mi" element={<SalePages breadcrumb = {['Trang chủ', 'Nam', 'Áo sơ mi']}/>}/>
         <Route path= "/order" element= {<Order/>}/>
       </Routes>

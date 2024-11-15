@@ -56,7 +56,7 @@ function SectionCarouselFlashSale() {
         <div className="z-1">
           <img
             onClick={prevActive}
-            className="absolute left-0 top-64 cursor-pointer"
+            className="absolute left-4 top-64 cursor-pointer w-[40px]"
             src={icons.iconArrowLeft}
             alt=""
           />
@@ -66,7 +66,7 @@ function SectionCarouselFlashSale() {
         <div className="z-1">
           <img
             onClick={nextActive}
-            className="absolute right-0 top-64 cursor-pointer"
+            className="absolute right-7 top-64 cursor-pointer w-[40px]"
             src={icons.iconArrowRight}
             alt=""
           />

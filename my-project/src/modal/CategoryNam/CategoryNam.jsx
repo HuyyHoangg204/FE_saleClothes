@@ -7,7 +7,7 @@ function CategoryNam() {
         <div>
             <ul>
                 <li className="font-semibold pb-2">Áo</li>
-                <li className="font-light cursor-pointer hover:font-medium">Áo thun</li>
+                <li className="font-light cursor-pointer hover:font-medium ">Áo thun</li>
                 <li className="font-light cursor-pointer hover:font-medium">Áo khoác</li>
                 <li className="font-light cursor-pointer hover:font-medium">Áo polo</li>
                 <li className="font-light cursor-pointer hover:font-medium">

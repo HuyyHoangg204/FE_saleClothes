@@ -1,17 +1,17 @@
-import HomeSectionCard from "../HomeSectionCard/HomeSectionCard";
+import HomeSectionCard from "~/partials/HomeSectionCard/HomeSectionCard.jsx";
 import React, { useRef, useState } from "react";
 import AliceCarousel from "react-alice-carousel";
 import "react-alice-carousel/lib/alice-carousel.css";
 import ButtonSeeMore from "../../components/ButtonSeeMore";
 import icons from "../../assets/icons";
 
-function SectionCaroselNewProduct() {
+function SectionCarouselWatchedProductr() {
   const carouselRef = useRef(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const responsive = {
     0: { items: 1 },
     720: { items: 3 },
-    1024: { items: 5 },
+    1024: { items: 4 },
   };
   const items = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1].map((item) => (
     <HomeSectionCard />
@@ -34,10 +34,10 @@ function SectionCaroselNewProduct() {
     <div className="relative  lg:px-10 mt-8">
       <div className="flex justify-center">
         <span className="text-3xl font-sans font-medium py-4">
-          Sản phẩm mới
+          Gợi ý mua cùng
         </span>
       </div>
-      <div className="relative p-4 overflow-visible">
+      <div className="relative p-4">
         <AliceCarousel
           ref={carouselRef}
           mouseTracking
@@ -55,7 +55,7 @@ function SectionCaroselNewProduct() {
         <div className="z-1">
           <img
             onClick={prevActive}
-            className="absolute left-4  top-64 cursor-pointer w-[40px]"
+            className="absolute left-0 top-64 cursor-pointer w-[40px]"
             src={icons.iconArrowLeft}
             alt=""
           />
@@ -65,7 +65,7 @@ function SectionCaroselNewProduct() {
         <div className="z-1">
           <img
             onClick={nextActive}
-            className="absolute right-7 top-64 cursor-pointer w-[40px]"
+            className="absolute right-0 top-64 cursor-pointer w-[40px]"
             src={icons.iconArrowRight}
             alt=""
           />
@@ -78,4 +78,4 @@ function SectionCaroselNewProduct() {
   );
 }
 
-export default SectionCaroselNewProduct;
+export default SectionCarouselWatchedProductr;

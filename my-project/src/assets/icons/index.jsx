@@ -30,6 +30,7 @@ import iconLogout from './iconLogout.svg';
 import iconEye from './iconEye.svg';
 import iconProduct from './iconProduct.svg';
 import iconCalendar from './iconCalendar.svg';
+import iconRuler from './iconRuler.svg'
 
 const icons = {
     iconSearch: iconSearch,
@@ -64,6 +65,7 @@ const icons = {
     iconEye: iconEye,
     iconProduct: iconProduct,
     iconCalendar: iconCalendar,
+    iconRuler: iconRuler,
 };
 
 
