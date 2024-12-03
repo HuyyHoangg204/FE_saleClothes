@@ -14,9 +14,9 @@ import Product from "../layouts/Product";
 function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [currentComponent, setCurrentComponent] = useState("dashboard");
-  const [token, setToken] = useState(null); // Khởi tạo token rỗng
-  const [isLoading, setIsLoading] = useState(true);
-  const [role,setRole] = useState("")
+  // const [token, setToken] = useState(null); // Khởi tạo token rỗng
+  // const [isLoading, setIsLoading] = useState(true);
+  // const [role,setRole] = useState("")
 
 
   const navigate = useNavigate();
@@ -25,24 +25,24 @@ function Dashboard() {
 
 
 
-  useEffect(() => {
-    const storedToken = localStorage.getItem("token"); // Lấy token từ localStorage
+  // useEffect(() => {
+  //   const storedToken = localStorage.getItem("token"); // Lấy token từ localStorage
 
-    if (!storedToken) {
-      setToken(null);
-      setIsLoading(false);
-    } else {
-      try {
-        setIsLoading(false)
-        //Giai ma token
-       const decodedToken = jwtDecode(storedToken)
-       setRole(decodedToken.scope)
-        console.log(role);
-      } catch (error) {}
-      setToken(storedToken);
-      setIsLoading(false);
-    }
-  }, [navigate]);
+  //   if (!storedToken) {
+  //     setToken(null);
+  //     setIsLoading(false);
+  //   } else {
+  //     try {
+  //       setIsLoading(false)
+  //       //Giai ma token
+  //      const decodedToken = jwtDecode(storedToken)
+  //      setRole(decodedToken.scope)
+  //       console.log(role);
+  //     } catch (error) {}
+  //     setToken(storedToken);
+  //     setIsLoading(false);
+  //   }
+  // }, [navigate]);
 
   //render
   console.log(currentComponent)
@@ -55,14 +55,12 @@ function Dashboard() {
     }
   };
 
-  if (isLoading) {
-    // Trong khi chờ kiểm tra token, hiển thị loading hoặc một nội dung khác
-    return <div>Loading...</div>;
-  }
+  // if (isLoading) {
+  //   // Trong khi chờ kiểm tra token, hiển thị loading hoặc một nội dung khác
+  //   return <div>Loading...</div>;
+  // }
   return (
     <div >
-      {role == "ADMIN" ? (
-        
         <div className="flex h-screen overflow-hidden">
           {/* Sidebar */}
           <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} setCurrentComponent={setCurrentComponent}/>
@@ -79,9 +77,12 @@ function Dashboard() {
             <Banner />
           </div>
         </div>
+        
+      {/* {role == "ADMIN" ? (
+        
       ) : (
         navigate("/")
-      )}
+      )} */}
     </div>
   );
 }
