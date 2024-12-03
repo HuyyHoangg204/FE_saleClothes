@@ -1,8 +1,10 @@
+import '~/css/header.css';
+
 function CategoryNu() {
   return (
     <div
-      style={{ width: "1312px", height: "400px" }}
-      className="bg-white z-10 border cursor-default flex justify-between px-10 pt-4 absolute bottom-[-298px] left-0 top-[96px] rounded-sm shadow font-sans"
+      style={{ width: "1312px", height: "400px", top: "6rem", left: "50%", transform: "translate(-50%, 0)"}}
+      className="top36rem bg-white z-10 border cursor-default flex justify-between px-10 pt-4 fixed rounded-sm shadow font-sans"
     >
       <div className="w-[700px]">
         <div className="flex justify-between ">
