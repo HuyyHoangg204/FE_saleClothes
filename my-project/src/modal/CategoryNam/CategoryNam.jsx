@@ -1,9 +1,10 @@
 import { Link } from "react-router-dom";
+import '~/css/header.css';
 
 
 function CategoryNam() {
     return ( 
-    <div style={{width: '1312px',height: '296px'}} className="bg-white z-10 cursor-default border flex justify-between px-10 pt-4 absolute bottom-[-296px] left-0 rounded-sm shadow font-sans">
+    <div style={{width: '1312px',height: '296px', top: "6rem", left: "50%", transform: "translate(-50%, 0)" }} className="top36rem bg-white z-10 cursor-default border flex justify-between px-10 pt-4 fixed rounded-sm shadow font-sans">
         <div>
             <ul>
                 <li className="font-semibold pb-2">Áo</li>

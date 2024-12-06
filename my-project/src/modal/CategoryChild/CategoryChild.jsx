@@ -1,6 +1,9 @@
+import '~/css/header.css';
+
 function CategoryChild() {
     return ( 
-        <div style={{width: '1312px',height: '310px'}} className="bg-white z-10 cursor-default border flex justify-between px-10 pt-4 absolute bottom-[-310px] left-0 rounded-sm shadow font-sans">
+        <div style={{width: '1312px',height: '310px', top: "6rem", left: "50%", transform: "translate(-50%, 0)"}} 
+        className="top36rem bg-white z-10 cursor-default border flex justify-between px-10 pt-4 fixed rounded-sm shadow font-sans">
         <div>
             <ul>
                 <li className="font-semibold pb-2">Bé nam</li>

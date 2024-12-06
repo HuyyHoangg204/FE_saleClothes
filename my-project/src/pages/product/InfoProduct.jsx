@@ -1,8 +1,8 @@
 import React, { useRef, useState } from 'react';
-import { Swiper, SwiperSlide } from 'swiper/react';
+// import { Swiper, SwiperSlide } from 'swiper/react';
 
 import StarIcon from '@mui/icons-material/Star';
-import 'swiper/css';
+// import 'swiper/css';
 import icons from '../../assets/icons';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
