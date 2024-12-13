@@ -11,6 +11,8 @@ import "./charts/ChartjsConfig";
 import SalePages from "./pages/sale/SalePages.jsx";
 import InfoUser from "./pages/infoUser/InfoUser.jsx";
 import MainProduct from "./pages/product/MainProduct.jsx";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 function App() {
@@ -35,6 +37,7 @@ function App() {
         <Route path="/nam/ao-so-mi" element={<SalePages breadcrumb = {['Trang chủ', 'Nam', 'Áo sơ mi']}/>}/>
         <Route path= "/order" element= {<Order/>}/>
       </Routes>
+      <ToastContainer position="top-right" autoClose={3000} />
     </div>
   );
 }

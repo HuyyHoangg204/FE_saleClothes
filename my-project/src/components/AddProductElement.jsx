@@ -3,35 +3,48 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import CloseIcon from '@mui/icons-material/Close';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 
-function AddProductElement({ handleRemoveTypeProduct, index }) {
+function AddProductElement({
+    handleRemoveTypeProduct,
+    index,
+    openAddImage,
+    handleClickChooseColor,
+    colors,
+    handleAddProductVariantData,
+}) {
     const [selectedColor, setSelectedColor] = useState('');
     const [showAllColor, setShowAllColor] = useState(false);
+    const [colorId, setColorId] = useState(null);
     const [selectedSize, setSelectedSize] = useState('S');
     const [showAllSize, setShowAllSize] = useState(false);
     const [listSizes, setListSizes] = useState([]);
-
-    const colors = [
-        { name: 'Đỏ', color: '#FF0000' },
-        { name: 'Xanh lá', color: '#00FF00' },
-        { name: 'Xanh dương', color: '#0000FF' },
-        { name: 'Vàng', color: '#FFFF00' },
-    ];
+    const [stock, setStock] = useState(0);
     const sizes = ['S', 'M', 'L', 'XL', '2XL'];
+
+    useEffect(() => {
+        handleAddProductVariantData(index, colorId, listSizes, stock);
+    }, [colorId, listSizes, stock]); // Lắng nghe sự thay đổi của các state này
 
     const handleSelect = (color) => {
         setSelectedColor(color);
     };
 
+    // const handleDataChange = () => {
+    //     console.log({ index, colorId, listSizes, stock });
+    //     handleAddProductVariantData(index, colorId, listSizes, stock);
+    // };
+
     const handleSelectSize = (size) => {
         setSelectedSize(size);
         setShowAllSize(false);
         setListSizes([...listSizes, size]);
+        // handleDataChange();
     };
 
     const handleRemoveSize = (index) => {
         const newListSizes = [...listSizes]; // Tạo bản sao của mảng listSizes
         newListSizes.splice(index, 1); // Xóa phần tử tại vị trí index
         setListSizes(newListSizes); // Cập nhật lại state với mảng mới
+        // handleDataChange();
     };
     const toggleColor = () => {
         setShowAllColor((prevState) => !prevState);
@@ -52,11 +65,11 @@ function AddProductElement({ handleRemoveTypeProduct, index }) {
                                 className="w-4 h-4 rounded-full mr-2"
                                 style={{ backgroundColor: selectedColor }}
                             ></span>
-                            <span>{colors.find((c) => c.color === selectedColor)?.name}</span>
+                            <span>{colors.find((c) => c.colorCode === selectedColor)?.colorName}</span>
                             <KeyboardArrowDownIcon />
                         </>
                     ) : (
-                        <div className="flex justify-between">
+                        <div onClick={handleClickChooseColor} className="flex justify-between">
                             <span>Chọn màu</span>
                             <KeyboardArrowDownIcon />
                         </div>
@@ -66,17 +79,21 @@ function AddProductElement({ handleRemoveTypeProduct, index }) {
                 {/* Dropdown */}
                 {showAllColor && (
                     <ul className="absolute bg-white border border-gray-300 rounded-lg mt-2 w-full shadow-lg">
-                        {colors.map((item) => (
+                        {colors.map((item, index) => (
                             <li
-                                key={item.color}
+                                key={index}
                                 className="flex items-center p-2 cursor-pointer hover:bg-gray-100"
-                                onClick={() => handleSelect(item.color)}
+                                onClick={(e) => {
+                                    setColorId(item.colorID);
+                                    handleSelect(item.colorCode);
+                                    // handleDataChange();
+                                }}
                             >
                                 <span
                                     className="w-4 h-4 rounded-full mr-2"
-                                    style={{ backgroundColor: item.color }}
+                                    style={{ backgroundColor: item.colorCode }}
                                 ></span>
-                                {item.name}
+                                {item.colorName}
                             </li>
                         ))}
                     </ul>
@@ -96,7 +113,10 @@ function AddProductElement({ handleRemoveTypeProduct, index }) {
                             <li
                                 className="flex items-center p-2 cursor-pointer hover:bg-gray-100"
                                 key={index}
-                                onClick={() => handleSelectSize(item)}
+                                onClick={() => {
+                                    handleSelectSize(item);
+                                    // handleDataChange();
+                                }}
                             >
                                 <span>{item}</span>
                             </li>
@@ -115,7 +135,10 @@ function AddProductElement({ handleRemoveTypeProduct, index }) {
                     </div>
 
                     <CloseIcon
-                        onClick={() => handleRemoveSize(index)}
+                        onClick={() => {
+                            handleRemoveSize(index);
+                            // handleDataChange();
+                        }}
                         fontSize="small"
                         className="text-red-500  absolute top-[-4px] right-[-4px] cursor-pointer"
                     />
@@ -127,7 +150,19 @@ function AddProductElement({ handleRemoveTypeProduct, index }) {
                 }}
                 className="text-red-500 absolute top-0 right-0 cursor-pointer"
             />
-            <div className="flex items-center justify-between px-4 bg-primary-700 h-10 rounded-lg ">
+            <input
+                onChange={(e) => {
+                    setStock(e.target.value);
+                    // handleDataChange();
+                }}
+                className="w-20 rounded-lg border border-gray-300"
+                placeholder="Stock"
+                type="number"
+            />
+            <div
+                onClick={() => openAddImage()}
+                className="flex items-center justify-between px-4 bg-primary-700 h-10 rounded-lg cursor-pointer"
+            >
                 <AddPhotoAlternateIcon />
                 <span className="text-white">Thêm ảnh</span>
             </div>

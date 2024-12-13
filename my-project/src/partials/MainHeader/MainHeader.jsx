@@ -6,9 +6,40 @@ import CategoryNu from '../../modal/CategoryNu/CategoryNu';
 import Cart from '../../layouts/Cart';
 import '~/css/Cart.css';
 import '~/css/header.css';
+import { jwtDecode } from "jwt-decode";
+import { useNavigate } from 'react-router-dom';
 
 function MainHeader() {
     const [displayCart, setDisplayCart] = useState(false);
+    const [token,setToken] = useState('');
+
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const accessToken = localStorage.getItem("token");
+        if(accessToken) {
+            setToken(accessToken);
+        }
+    }, [])
+    //handle clịck account
+    const handleClickAccount = () => {
+        if(!token) {
+        navigate("/login");
+        } else {
+            const decodedToken = jwtDecode(token);
+            console.log(decodedToken)
+            if(decodedToken.exp * 1000 <= Date.now()) {
+                localStorage.removeItem("token")
+                navigate("/login");
+            } else {
+                if(decodedToken.scope === 'ADMIN') {
+                    navigate("/admin")
+                } else {
+                    navigate("/my-account")
+                }
+            }
+        }
+    }
 
     // Handle popup cart
     const toggleShowCart = () => {
@@ -121,9 +152,9 @@ function MainHeader() {
                                 0
                             </div>
                         </div>
-                        <a href="/my-account">
+                        <div className='cursor-pointer' onClick={handleClickAccount}>
                             <img className="w-12 h-8" src={icons.iconAccount} alt="" />
-                        </a>
+                        </div>
                     </div>
                 </div>
             </header>

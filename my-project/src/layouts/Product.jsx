@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import 'flowbite/dist/flowbite.min.css'; // Import CSS của Flowbite
 import 'flowbite'; // Import JavaScript của Flowbite
+import { toast } from 'react-toastify';
 
 import {
     addProduct,
@@ -10,6 +11,9 @@ import {
     uploadImageToFileSystem,
     getAllDanhMucCon,
     deleteProduct,
+    addColorProduct,
+    addProductVariant,
+    updateImageProduct,
 } from '../redux/apiRequest';
 import { useDispatch, useSelector } from 'react-redux';
 import ProductTable from '../components/ProductTable';
@@ -17,6 +21,8 @@ import SuccessMessage from '../components/SuccessMessage';
 import DrawerUpdate from '../components/DrawerUpdate';
 import DrawerPreview from '../components/DrawerPreview';
 import AddProductElement from '../components/AddProductElement';
+import AddImageProduct from '../modal/AddImageProduct/AddImageProduct';
+import { getAllColorProduct } from '../redux/apiRequest';
 
 function Product() {
     const inputRef = useRef();
@@ -29,18 +35,36 @@ function Product() {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [isFillterDropDownOpen, setIsFillterDropDownOpen] = useState(false);
     const [keyDm, setKeyDm] = useState(null);
-    const [dmcMa, setSubKeyDm] = useState(null);
-    const [spGiaCu, setOldPrice] = useState(0);
-    const [spGia, setNewPrice] = useState(0);
-    const [spSoLuong, setStock] = useState(0);
+    
 
-    const [spMoTaNgan, setShortDescription] = useState('');
-    const [spMoTaChiTiet, setFullDescription] = useState('');
-    const [selectedFile, setSelectedFile] = useState(null);
-    const [spTen, setProductName] = useState('');
+    //State Image
+    const [idImageModal, setIdImageModal] = useState(null);
+    const [imagesProductVariant, setImagesProductVariant] = useState([]);
+    //State Add Product
+    const [productName, setProductName] = useState('');
+    const [description, setDescription] = useState('');
+    const [dmcMa, setSubKeyDm] = useState(null);
+    const [price, setPrice] = useState(null)
+    const [discount, setDiscount] = useState(0)
+    const [material,setMaterial] = useState('')
+    const [instruction, setInstruction] = useState('');
+    const [colorName, setColorName] = useState('');
+    const [productCode, setProductCode] = useState('');
+    const [productVariantData, setProductVariantData] = useState([]);
+
     const [spMa, setSpMa] = useState(null);
     const [color, setColor] = useState('#000000'); // State để lưu mã HEX
     const [typeProduct, setTypeProduct] = useState([1]);
+    const [showAddImage, setShowAddImage] = useState(false);
+    const [colors, setColors] = useState([]);
+
+    //Handle click choose color
+    const handleClickChooseColor = async () => {
+        try {
+            const data = await getAllColorProduct();
+            setColors(data.result);
+        } catch (error) {}
+    };
 
     const dispatch = useDispatch();
 
@@ -78,47 +102,158 @@ function Product() {
         setSubKeyDm(e.target.value);
     };
     // Handle Add Product=======================================================================
+    useEffect(() => {
+        console.log(productVariantData)
+    }, [productVariantData])
 
     const handleAddProduct = async (e) => {
-        try {
-            const accessToken = localStorage.getItem('token');
-            const spNgayCapNhat = new Date().toISOString().split('T')[0];
-            const product = {
-                spTen,
-                spGia,
-                spGiaCu,
-                spMoTaNgan,
-                spMoTaChiTiet,
-                spNgayCapNhat,
-                spSoLuong,
-                spColor,
-                dmcMa,
-            };
-
-            const response = await addProduct(product, dispatch, accessToken);
-            console.log(response);
-            // Get spMa from the response
-            const spMa = response.result.spMa; // Adjust this based on your actual response structure
-
-            if (spMa && selectedFile) {
-                const res = await uploadImageToFileSystem(selectedFile, spMa);
-                const checked = res.split(':')[0];
-            } else {
-                console.error('Image file is not defined or spMa is missing');
+      
+        const product = {
+            name: productName,
+            base_price: Number(price), // Chuyển đổi sang number
+            description: description,
+            dmcMaId: Number(dmcMa), // Chuyển đổi sang number
+            discount_percentage: Number(discount), // Chuyển đổi sang number
+            material: material,
+            instruction: instruction
+        };
+        if(validateProduct(product)) {
+            try {
+                const accessToken = localStorage.getItem('token');
+                const response = await addProduct(product, dispatch, accessToken);
+                const productId = response.result.product_id;
+                if(productId) {                
+                    const updatedVariants = productVariantData.map((variant) => ({
+                        ...variant,
+                        product_id: productId,
+                    }));
+        
+                    try {
+                        for (const [index, variant] of updatedVariants.entries()) {
+                            const res = await addProductVariant(variant);
+                            if(res.result.variant_id) {
+                               const imageData = imagesProductVariant.find((image) => image.id === index)
+                               
+                               try {
+                                updateImageProduct(imageData.images, res.result.variant_id)
+                                
+                               } catch (error) {
+                                
+                               }
+                            }
+                        }
+                        
+                        toast.success("Thêm sản phẩm thành công!")
+                        closeModal();
+                    } catch (error) {
+                        console.log(error)
+                        toast.error("Thêm sản phẩm thất bại")
+                    }
+                    
+                }
+                
+                // fetchProduct();
+                
+            } catch (error) {
+                
             }
-            fetchProduct();
-            closeModal();
-            if (response.code == 1000) {
-                setShowSuccessMessage(true);
-                console.log(true); // Log this after state has been updated
-                setTimeout(() => {
-                    setShowSuccessMessage(false);
-                }, 2000);
-            }
-        } catch (error) {
-            console.error('Error adding product or uploading image', error);
         }
+
+        // try {
+        //     const accessToken = localStorage.getItem('token');
+        //     const spNgayCapNhat = new Date().toISOString().split('T')[0];
+        //     const product = {
+        //         spTen,
+        //         spGia,
+        //         spGiaCu,
+        //         spMoTaNgan,
+        //         spMoTaChiTiet,
+        //         spNgayCapNhat,
+        //         spSoLuong,
+        //         spColor,
+        //         dmcMa,
+        //     };
+
+        //     const response = await addProduct(product, dispatch, accessToken);
+        //     console.log(response);
+        //     // Get spMa from the response
+        //     const spMa = response.result.spMa; // Adjust this based on your actual response structure
+
+        //     if (spMa && selectedFile) {
+        //         const res = await uploadImageToFileSystem(selectedFile, spMa);
+        //         const checked = res.split(':')[0];
+        //     } else {
+        //         console.error('Image file is not defined or spMa is missing');
+        //     }
+        //     fetchProduct();
+        //     closeModal();
+        //     if (response.code == 1000) {
+        //         setShowSuccessMessage(true);
+        //         console.log(true); // Log this after state has been updated
+        //         setTimeout(() => {
+        //             setShowSuccessMessage(false);
+        //         }, 2000);
+        //     }
+        // } catch (error) {
+        //     console.error('Error adding product or uploading image', error);
+        // }
     };
+    const validateProduct = (product) => {
+        let checked = true
+    
+        // Kiểm tra trường 'name'
+        if (!product.name || product.name.trim() === "") {
+            checked = false
+            toast.error("Tên sản phẩm không được để trống.");
+            
+        }
+    
+        // Kiểm tra trường 'description'
+        if (!product.description || product.description.trim() === "") {
+            checked = false
+           toast.error("Mô tả sản phẩm không được để trống.");
+        }
+    
+        // Kiểm tra trường 'material'
+        if (!product.material || product.material.trim() === "") {
+            checked = false
+             toast.error("Chất liệu sản phẩm không được để trống.");
+        }
+    
+        // Kiểm tra trường 'instruction'
+        if (!product.instruction || product.instruction.trim() === "") {
+            checked = false
+            toast.error( "Hướng dẫn sử dụng không được để trống.");
+        }
+    
+        // Kiểm tra trường 'base_price'
+        if (!product.base_price || isNaN(product.base_price) || product.base_price <= 0) {
+            checked = false
+            toast.error("Giá sản phẩm phải là một số hợp lệ và lớn hơn 0.");
+        }
+    
+        // Kiểm tra trường 'dmcMaId'
+        if (!product.dmcMaId || isNaN(product.dmcMaId) || product.dmcMaId <= 0) {
+            checked = false
+            toast.error("Mã danh mục phải là một số hợp lệ và lớn hơn 0.");
+        }
+    
+        // Kiểm tra trường 'discount_percentage'
+        if (product.discount_percentage && (isNaN(product.discount_percentage) || product.discount_percentage < 0 || product.discount_percentage > 100)) {
+            checked = false
+            toast.error("Phần trăm giảm giá phải là một số từ 0 đến 100.");
+        }
+        return checked;
+    };
+
+    const handleAddProductVariantData = (index, color_id, size, stockQuantity) => {
+        setProductVariantData((prevData) => {
+            const updatedData = [...prevData];
+            updatedData[index] = { color_id, size, stockQuantity }; // Cập nhật dữ liệu cho sản phẩm tại index
+            return updatedData;
+        });
+    };
+    
 
     // handle get ma san pham
     const handleGetMaSp = (maSp) => {
@@ -162,35 +297,51 @@ function Product() {
             alert('Failed to delete product'); // Handle any errors that occur
         }
     };
+    // Handle add color =============================================================
+    const handleAddColorProduct = async () => {
+        const accessToken = localStorage.getItem('token');
+        const newColor = {
+            colorName: colorName,
+            colorCode: color,
+        };
+        try {
+            await addColorProduct(newColor, accessToken);
+            handleClickChooseColor();
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
     //Handel Input============================================================================
 
-    const handleOldPriceChange = (e) => {
-        setOldPrice(e.target.value);
+    const handleChangDiscount = (e) => {
+       setDiscount(e.target.value)
     };
-    const handleNewPriceChange = (e) => {
-        setNewPrice(e.target.value);
+    const handleChangeNameColor = (e) => {
+        setColorName(e.target.value);
     };
-    const handleStockChange = (e) => {
-        setStock(e.target.value);
-    };
+
     const handleColorChange = (event) => {
         setColor(event.target.value); // Cập nhật mã HEX khi chọn màu
     };
-    const handleShortDescriptionChange = (e) => {
-        setShortDescription(e.target.value);
+    const handleChangeDescription = (e) => {
+        setDescription(e.target.value)
     };
-    const handleFullDescriptionChange = (e) => {
-        setFullDescription(e.target.value);
+    const handleMaterialChange = (e) => {
+        setMaterial(e.target.value)
     };
     const handleProductNameChange = (e) => {
         setProductName(e.target.value);
     };
+    const handleChangeInstruction = (e) => {
+        setInstruction(e.target.value);
+    }
+    const handleChangePrice = (e) => {
+        setPrice(e.target.value)
+    }
+    
 
-    const handleFileChange = (e) => {
-        const file = e.target.files[0];
-        setSelectedFile(file);
-    };
+
     const handleAddTypeProduct = () => {
         setTypeProduct([...typeProduct, 1]);
     };
@@ -198,26 +349,23 @@ function Product() {
         const newTypeProduct = [...typeProduct];
         newTypeProduct.splice(index, 1);
         setTypeProduct(newTypeProduct);
-    }
+        setImagesProductVariant((prevImages) => prevImages.filter((item) => item.id !== index))
+    };
 
     //Handle popup
 
     const openModal = () => {
-        setTypeProduct([1])
+        setTypeProduct([1]);
         setIsModalOpen(true);
     };
 
     const closeModal = () => {
         setIsDrawerUpdateOpen(false);
         setIsModalOpen(false);
-        setSelectedFile(null);
         setColor('');
-        setFullDescription('');
-        setShortDescription('');
-        setStock(0);
-        setNewPrice(0);
-        setOldPrice(0);
         setProductName('');
+        setShowAddImage(false)
+   
     };
 
     const onpenDrawerUpdate = () => {
@@ -248,6 +396,35 @@ function Product() {
             setIsFillterDropDownOpen(false);
         } else setIsFillterDropDownOpen(true);
     };
+    // Handle image
+    const openAddImage = (id) => {
+        setShowAddImage(true);
+        setIdImageModal(id);
+    };
+    const closeAddImage = () => {
+        setShowAddImage(false);
+    };
+    const handleImageProductVariant = (images) => {
+        const newImageProductVariant = {
+            id: idImageModal,
+            images: images,
+        };
+    
+        setImagesProductVariant((prevImages) => {
+            // Kiểm tra xem id đã tồn tại trong mảng chưa
+            const isDuplicate = prevImages.some((item) => item.id === idImageModal);
+            if (isDuplicate) {
+                // Nếu id đã tồn tại, cập nhật phần tử tương ứng
+                return prevImages.map((item) =>
+                    item.id === idImageModal ? newImageProductVariant : item
+                );
+            }
+    
+            // Nếu id chưa tồn tại, thêm phần tử mới vào mảng
+            return [...prevImages, newImageProductVariant];
+        });
+    };
+    
 
     return (
         <>
@@ -1198,6 +1375,7 @@ function Product() {
                     className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 overflow-y-auto "
                     onClick={closeModal}
                 >
+                    {showAddImage && <AddImageProduct  closeAddImage={closeAddImage} idImageModal={idImageModal}  handleImageProductVariant = {handleImageProductVariant} imagesProductVariant = {imagesProductVariant}/>}
                     <div className="relative  p-4 w-full max-w-3xl h-full md:h-auto ">
                         {/** Modal content */}
                         <div
@@ -1303,7 +1481,7 @@ function Product() {
                                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                                             placeholder="Type product price"
                                             required=""
-                                            onChange={handleProductNameChange}
+                                            onChange={handleChangePrice}
                                         />
                                     </div>
                                     <div className="grid gap-4 sm:col-span-2 md:gap-6 sm:grid-cols-4">
@@ -1321,7 +1499,7 @@ function Product() {
                                                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                                                 placeholder="ex:10%"
                                                 required=""
-                                                onChange={handleOldPriceChange}
+                                                onChange={handleChangDiscount}
                                             />
                                         </div>
                                         <div>
@@ -1332,13 +1510,13 @@ function Product() {
                                                 Nhập màu sản phẩm
                                             </label>
                                             <input
-                                                type="number"
+                                                type="text"
                                                 name="newPrice"
                                                 id="newPrice"
                                                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                                                 placeholder="Nhập tên màu"
                                                 required=""
-                                                onChange={handleNewPriceChange}
+                                                onChange={handleChangeNameColor}
                                             />
                                         </div>
                                         <div>
@@ -1374,18 +1552,33 @@ function Product() {
                                             >
                                                 Color
                                             </label>
-                                            <button className="bg-primary-700 w-full rounded-lg h-1/2 text-white">
-                                                Thêm màu
-                                            </button>
+                                            <div
+                                                onClick={handleAddColorProduct}
+                                                className="bg-primary-700 w-full rounded-lg h-1/2 text-white flex justify-center items-center cursor-pointer"
+                                            >
+                                                <span>Thêm màu</span>
+                                            </div>
                                         </div>
                                     </div>
                                     {typeProduct.map((product, index) => (
                                         <div key={index} className="sm:col-span-2">
-                                            <AddProductElement handleRemoveTypeProduct = {handleRemoveTypeProduct} index={index}/>
+                                            <AddProductElement
+                                            handleAddProductVariantData = {handleAddProductVariantData}
+                                                handleRemoveTypeProduct={handleRemoveTypeProduct}
+                                                index={index}
+                                                openAddImage={() => openAddImage(index)}
+                                                handleClickChooseColor={handleClickChooseColor}
+                                                colors={colors}
+                                            />
                                         </div>
                                     ))}
                                     <div className="sm:col-span-2 flex justify-center items-center">
-                                        <span onClick={handleAddTypeProduct} className="h-10 bg-primary-700 text-white px-6 rounded-xl cursor-pointer">Thêm</span>
+                                        <span
+                                            onClick={handleAddTypeProduct}
+                                            className="h-10 bg-primary-700 text-white px-6 rounded-xl cursor-pointer"
+                                        >
+                                            Thêm
+                                        </span>
                                     </div>
                                     <div className="sm:col-span-2">
                                         <label
@@ -1399,7 +1592,7 @@ function Product() {
                                             rows="4"
                                             className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                                             placeholder="Nhập mô tả"
-                                            onChange={handleShortDescriptionChange}
+                                            onChange={handleChangeDescription}
                                         ></textarea>
                                     </div>
 
@@ -1415,7 +1608,7 @@ function Product() {
                                             rows="4"
                                             className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                                             placeholder="Nhập chất liệu"
-                                            onChange={handleFullDescriptionChange}
+                                            onChange={handleMaterialChange}
                                         ></textarea>
                                     </div>
                                     <div className="sm:col-span-2">
@@ -1430,7 +1623,7 @@ function Product() {
                                             rows="4"
                                             className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                                             placeholder="Nhập hướng dẫn sử dụng"
-                                            onChange={handleFullDescriptionChange}
+                                            onChange={handleChangeInstruction}
                                         ></textarea>
                                     </div>
                                 </div>

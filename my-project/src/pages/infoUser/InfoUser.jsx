@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import icon from '../../assets/icons/index.jsx';
 import BreadCrumb from '../../components/BreadCrumb.jsx';
 import MainHeader from '../../partials/MainHeader/MainHeader.jsx';
@@ -11,11 +11,18 @@ import SlideViewedUser from '../../components/infoUser/SlideViewedUser.jsx';
 import SlideVoucherUser from '../../components/infoUser/SlideVoucherUser.jsx';
 import SlideOrderDetail from '../../components/infoUser/SlideOrderDetail.jsx';
 import Footer from '../../partials/Footer/Footer.jsx';
+import { useSelector } from 'react-redux';
 
 function InfoUser({ breadcrumb }) {
     // State để quản lý trang hiện tại
     const [currentPage, setCurrentPage] = useState('infoUser');
     const [viewingOrder, setViewingOrder] = useState(null);
+
+    const user = useSelector((state) => state.user.user?.user);
+
+    useEffect(() => {
+    
+    },[])
 
     // Hàm để xử lý việc hiển thị các trang khác nhau
     const handleNavigation = (page) => {
