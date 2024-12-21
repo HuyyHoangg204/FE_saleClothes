@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from "react-redux";
 import 'flowbite/dist/flowbite.min.css'; // Import CSS của Flowbite
 import 'flowbite'; // Import JavaScript của Flowbite
 import { toast } from 'react-toastify';
@@ -14,8 +15,9 @@ import {
     addColorProduct,
     addProductVariant,
     updateImageProduct,
+    getProductToShowManager,
 } from '../redux/apiRequest';
-import { useDispatch, useSelector } from 'react-redux';
+useSelector
 import ProductTable from '../components/ProductTable';
 import SuccessMessage from '../components/SuccessMessage';
 import DrawerUpdate from '../components/DrawerUpdate';
@@ -49,7 +51,6 @@ function Product() {
     const [material,setMaterial] = useState('')
     const [instruction, setInstruction] = useState('');
     const [colorName, setColorName] = useState('');
-    const [productCode, setProductCode] = useState('');
     const [productVariantData, setProductVariantData] = useState([]);
 
     const [spMa, setSpMa] = useState(null);
@@ -57,6 +58,7 @@ function Product() {
     const [typeProduct, setTypeProduct] = useState([1]);
     const [showAddImage, setShowAddImage] = useState(false);
     const [colors, setColors] = useState([]);
+    const [allProduct, setAllProduct] = useState([])
 
     //Handle click choose color
     const handleClickChooseColor = async () => {
@@ -102,9 +104,7 @@ function Product() {
         setSubKeyDm(e.target.value);
     };
     // Handle Add Product=======================================================================
-    useEffect(() => {
-        console.log(productVariantData)
-    }, [productVariantData])
+
 
     const handleAddProduct = async (e) => {
       
@@ -144,6 +144,7 @@ function Product() {
                         }
                         
                         toast.success("Thêm sản phẩm thành công!")
+                        fetchProduct();
                         closeModal();
                     } catch (error) {
                         console.log(error)
@@ -159,44 +160,7 @@ function Product() {
             }
         }
 
-        // try {
-        //     const accessToken = localStorage.getItem('token');
-        //     const spNgayCapNhat = new Date().toISOString().split('T')[0];
-        //     const product = {
-        //         spTen,
-        //         spGia,
-        //         spGiaCu,
-        //         spMoTaNgan,
-        //         spMoTaChiTiet,
-        //         spNgayCapNhat,
-        //         spSoLuong,
-        //         spColor,
-        //         dmcMa,
-        //     };
-
-        //     const response = await addProduct(product, dispatch, accessToken);
-        //     console.log(response);
-        //     // Get spMa from the response
-        //     const spMa = response.result.spMa; // Adjust this based on your actual response structure
-
-        //     if (spMa && selectedFile) {
-        //         const res = await uploadImageToFileSystem(selectedFile, spMa);
-        //         const checked = res.split(':')[0];
-        //     } else {
-        //         console.error('Image file is not defined or spMa is missing');
-        //     }
-        //     fetchProduct();
-        //     closeModal();
-        //     if (response.code == 1000) {
-        //         setShowSuccessMessage(true);
-        //         console.log(true); // Log this after state has been updated
-        //         setTimeout(() => {
-        //             setShowSuccessMessage(false);
-        //         }, 2000);
-        //     }
-        // } catch (error) {
-        //     console.error('Error adding product or uploading image', error);
-        // }
+       
     };
     const validateProduct = (product) => {
         let checked = true
@@ -260,24 +224,21 @@ function Product() {
         setSpMa(maSp);
     };
 
-    // Handle Get all product ========================================================
-    const stateAllProduct = useSelector((state) => state?.product?.getAllProduct?.currentAllProduct);
-    const isLoading = useSelector((state) => state.product.getAllProduct.isFetching);
 
-    const allProduct = stateAllProduct?.result || [];
+    // Handle Get all product ========================================================
+    const callApiGetAllProduct = async () => {
+        const res = await getProductToShowManager();
+        setAllProduct(res.result)
+    }
+    useEffect(() => {
+        callApiGetAllProduct();
+    },[])
+    
     const fetchProduct = () => {
-        const accessToken = localStorage.getItem('token');
-        getAllProduct(dispatch, accessToken);
+        callApiGetAllProduct()
     };
 
-    useEffect(() => {
-        fetchProduct();
-    }, []);
-    // if (isLoading) {
-    //   return <div>Loading...</div>;
-    // }
-    // Get Product by Sp ma=========================================================================
-    const productBySpMa = allProduct.find((product) => product.spMa == spMa);
+
 
     // handle delete product ====================================================================
 
@@ -292,9 +253,10 @@ function Product() {
 
             // Close the modal after successful deletion
             closeDeleteModal();
+            toast.success("Xóa sản phẩm thành công!!")
         } catch (error) {
             console.error('Error deleting product:', error);
-            alert('Failed to delete product'); // Handle any errors that occur
+            toast.error('Failed to delete product'); // Handle any errors that occur
         }
     };
     // Handle add color =============================================================
@@ -368,7 +330,8 @@ function Product() {
    
     };
 
-    const onpenDrawerUpdate = () => {
+    const onpenDrawerUpdate = (id) => {
+        setSelectedProductId(id);
         setIsDrawerUpdateOpen(true);
     };
 
@@ -1354,9 +1317,7 @@ function Product() {
                             </div>
                         </div>
                         <ProductTable
-                            productBySpMa={productBySpMa}
                             allProduct={allProduct}
-                            allSubCategory={allSubCategory}
                             onpenDrawerUpdate={onpenDrawerUpdate}
                             openDrawerPreview={openDrawerPreview}
                             openDeleteModal={openDeleteModal}
@@ -1690,9 +1651,11 @@ function Product() {
                     subCategory={subCategory}
                     closeModal={closeModal}
                     handleCategoryChange={handleCategoryChange}
-                    productBySpMa={productBySpMa}
                     dmcMa={dmcMa}
                     fetchProduct={fetchProduct}
+                    showAddImage={showAddImage}
+                    selectedProductId = {selectedProductId}
+                    
                 />
             )}
             {/*Preview Drawer */}

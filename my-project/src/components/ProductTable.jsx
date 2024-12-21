@@ -5,7 +5,6 @@ import axios from "axios";
 
 function ProductTable({
   allProduct,
-  allSubCategory,
   onpenDrawerUpdate,
   openDrawerPreview,
   openDeleteModal,
@@ -18,16 +17,21 @@ function ProductTable({
 
   const dispatch = useDispatch();
 
+   const allSubCategory = useSelector((state) => state.category.getAllSubCategory?.currentAllSubCategory);
   useEffect(() => {
+    
     setAccessToken(localStorage.getItem("token"));
-  });
-  const totalPages = Math.ceil(allProduct.length / itemsPerPage);
+  },[]);
+  const totalPages = Math.ceil(allProduct?.length / itemsPerPage);
 
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const selectedProducts = allProduct.slice(
+  const selectedProducts = allProduct?.slice(
     startIndex,
     startIndex + itemsPerPage
   );
+  useEffect(() => {
+    console.log(selectedProducts)
+  },[])
   useEffect(() => {
     if (totalPages <= 3) {
       setShow3Dot(false);
@@ -38,7 +42,7 @@ function ProductTable({
     } else if (currentPage === totalPages) {
       setShow3Dot(false);
     } else setShow3Dot(true);
-  });
+  },[]);
 
   // tính toán các trang cần hiển thị
   const getDisplayedPages = () => {
@@ -107,38 +111,30 @@ function ProductTable({
                 </div>
               </th>
               <th scope="col" className="p-4">
-                Product
+                Tên sản phẩm
               </th>
               <th scope="col" className="p-4">
                 Category
               </th>
+              
               <th scope="col" className="p-4">
-                Stock
+                Giảm giá (%)
               </th>
-              <th scope="col" className="p-4">
-                Sales/Day
-              </th>
-              <th scope="col" className="p-4">
-                Sales/Month
-              </th>
+            
               <th scope="col" className="p-4">
                 Rating
               </th>
               <th scope="col" className="p-4">
-                Sales
+                Giá (VNĐ)
               </th>
-              <th scope="col" className="p-4">
-                Revenue
-              </th>
-              <th scope="col" className="p-4">
-                Last Update
-              </th>
+              
+              
             </tr>
           </thead>
           <tbody>
-            {selectedProducts.map((product) => (
+            {selectedProducts?.map((product,index) => (
               <tr
-                key={product.spMa}
+                key={index}
                 className="border-b dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700"
               >
                 <td className="p-4 w-4">
@@ -167,34 +163,24 @@ function ProductTable({
                       alt=""
                       className="h-8 w-auto mr-3"
                     />
-                    {product.spTen}&#34;
+                    {product.name}
                   </div>
                 </th>
                 <td className="px-4 py-3">
                   <span className="bg-primary-100 text-primary-800 text-xs font-medium px-2 py-0.5 rounded dark:bg-primary-900 dark:text-primary-300">
                     {
                       allSubCategory?.result.find(
-                        (item) => item.dmcMa === product.dmcMa
+                        (item) => item.dmcMa === product.dmcMaId
                       ).dmcTen
                     }
                   </span>
                 </td>
                 <td className="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                  <div className="flex items-center">
-                    {product.spSoLuong <= 100 ? (
-                      <div className="h-4 w-4 rounded-full inline-block mr-2 bg-red-700"></div>
-                    ) : (
-                      <div className="h-4 w-4 rounded-full inline-block mr-2 bg-green-700" />
-                    )}
-                    {product.spSoLuong}
+                  <div className="flex items-center justify-center">
+                    <span>{product.discount_percentage}</span>
                   </div>
                 </td>
-                <td className="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                  1.47
-                </td>
-                <td className="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                  0.47
-                </td>
+                
                 <td className="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                   <div className="flex items-center">
                     <svg
@@ -249,25 +235,16 @@ function ProductTable({
                 </td>
                 <td className="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                   <div className="flex items-center">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                      className="w-5 h-5 text-gray-400 mr-2"
-                      aria-hidden="true"
-                    >
-                      <path d="M2.25 2.25a.75.75 0 000 1.5h1.386c.17 0 .318.114.362.278l2.558 9.592a3.752 3.752 0 00-2.806 3.63c0 .414.336.75.75.75h15.75a.75.75 0 000-1.5H5.378A2.25 2.25 0 017.5 15h11.218a.75.75 0 00.674-.421 60.358 60.358 0 002.96-7.228.75.75 0 00-.525-.965A60.864 60.864 0 005.68 4.509l-.232-.867A1.875 1.875 0 003.636 2.25H2.25zM3.75 20.25a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zM16.5 20.25a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0z" />
-                    </svg>
-                    1.6M
+                  {product.base_price.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
                   </div>
                 </td>
-                <td className="px-4 py-3">$3.2M</td>
+                
                 <td className="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                   <div className="flex items-center space-x-4">
                     <button
                       onClick={() => {
-                        onpenDrawerUpdate();
-                        handleGetMaSp(product.spMa);
+                       onpenDrawerUpdate(product.product_id);
+                        handleGetMaSp(product.product_id);
                       }}
                       type="button"
                       className="py-2 px-3 flex items-center text-sm font-medium text-center text-white bg-primary-700 rounded-lg hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
@@ -313,7 +290,7 @@ function ProductTable({
                     </button>
                     <button
                       type="button"
-                      onClick={() => {openDeleteModal(product.spMa)}}
+                      onClick={() => {openDeleteModal(product.product_id)}}
                       className="flex items-center text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-3 py-2 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900"
                     >
                       <svg

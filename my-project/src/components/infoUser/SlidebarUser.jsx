@@ -1,5 +1,6 @@
 import icon from '../../assets/icons/index.jsx';
 import { useState } from 'react';
+import { useNavigate } from "react-router";
 
 function SlidebarUser({
     currentPage,
@@ -10,6 +11,11 @@ function SlidebarUser({
     handleClickViewedUser,
     handleClickVoucherUser
 }) {
+    const navigate = useNavigate()
+    const handleLogout = () => {
+        localStorage.removeItem('token')
+        navigate("/login")
+    }
     return (
         <div className="w-[320px] bg-white mr-[25px] h-[730px]">
             {/* img */}
@@ -88,7 +94,7 @@ function SlidebarUser({
                     </div>
                     <div className="">Mã ưu đãi</div>
                 </li>
-                <li className="flex items-center h-[52px] hover:bg-[#eaebf6] pl-5">
+                <li onClick={handleLogout} className="flex items-center h-[52px] hover:bg-[#eaebf6] pl-5">
                     <div className="mr-3">
                         <img className="w-[30px] h-[30px]" src={icon.iconLogout} alt="" />
                     </div>

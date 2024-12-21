@@ -238,18 +238,18 @@ export const uploadImageToFileSystem = async (selectedFile, variant_id) => {
     }
 };
 // DownLoad image product from server
-export const downloadAllImageFromServerBySpMa = async (spMa, token, dispatch) => {
-    dispatch(getImageProductStart());
+export const downloadAllImageFromServerBySpMa = async (spMa) => {
     try {
+        const token = localStorage.getItem('token')
         const res = await axiosInstance.get(`http://localhost:8081/image/fileSystems/${spMa}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
         });
-        dispatch(getImageProductSuccess(res.data));
+        return res.data.result
     } catch (error) {
         console.log(error);
-        dispatch(getImageProductFailed());
+
     }
 };
 // Download all image products from server
@@ -303,7 +303,7 @@ export const getAllProduct = async (dispatch, token) => {
 // delete product
 export const deleteProduct = async (spMa, token) => {
     try {
-        await axiosInstance.delete(REST_API_BASE_URL + `/delete-sanpham/${spMa}`, {
+        await axiosInstance.delete(REST_API_V1_URL + `/delete-sanpham/${spMa}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -313,14 +313,14 @@ export const deleteProduct = async (spMa, token) => {
     }
 };
 // update product =================================================================
-export const updateProduct = async (spMa, product, token) => {
+export const updateProduct = async (spMa, product) => {
     try {
-        const res = await axiosInstance.put(REST_API_BASE_URL + `/sanpham/${spMa}`, product, {
+        const token = localStorage.getItem("token")
+        const res = await axiosInstance.put(REST_API_V1_URL + `/sanpham/${spMa}`, product, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
         });
-        return res;
     } catch (error) {
         console.log(error);
     }
@@ -361,10 +361,10 @@ export const updateImageProduct = async (files, variant_id) => {
 
 
 // delete image product =============================================================
-export const deleteImages = async (names, spMa, token) => {
+export const deleteImageById = async (id) => {
     try {
-        await axiosInstance.delete(`http://localhost:8081/image/fileSystems/${spMa}`, {
-            data: names,
+        const token = localStorage.getItem('token')
+        await axiosInstance.delete(`http://localhost:8081/image/fileSystem/${id}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -420,6 +420,62 @@ export const addProductVariant = async (productVariant) => {
         return res.data
     } catch (error) {
         toast.error('Đã xảy ra lỗi khi thêm phiên bản sản phẩm!');
+        console.log(error)
+    }
+}
+
+export const getProductToShowManager = async () => {
+    try {
+        const accessToken = localStorage.getItem('token');
+        const config = {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        };
+        const res = await axiosInstance.get(REST_API_V1_URL + '/showSanPham', config);
+       return res.data;
+    } catch (error) {
+        console.log(error)
+    }
+}
+export const getProductById = async (id) => {
+    try {
+        const accessToken = localStorage.getItem('token');
+        const config = {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        };
+        const res = await axiosInstance.get(REST_API_V1_URL + `/sanpham/${id}`, config);
+       return res.data;
+    } catch (error) {
+        console.log(error)
+    }
+}
+export const getAllProductsVariantByProductID = async (id) => {
+    try {
+        const accessToken = localStorage.getItem('token');
+        const config = {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        };
+        const res = await axiosInstance.get(REST_API_V1_URL + `/productVariantsByProductID/${id}`, config);
+       return res.data.result;
+    } catch (error) {
+        console.log(error)
+    }
+}
+export const deleteProductVariant = async (id) => {
+    try {
+        const accessToken = localStorage.getItem('token');
+        const config = {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        };
+        await axiosInstance.delete(REST_API_V1_URL + `/delete_product_variant/${id}`, config);
+    } catch (error) {
         console.log(error)
     }
 }

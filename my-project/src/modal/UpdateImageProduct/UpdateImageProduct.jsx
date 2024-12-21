@@ -1,65 +1,100 @@
 import CloseIcon from '@mui/icons-material/Close';
 import { useEffect, useState } from 'react';
+
 import { toast } from 'react-toastify';
-function AddImageProduct({ closeAddImage, idImageModal, handleImageProductVariant,imagesProductVariant }) {
-    // State variables
+import { deleteImageById, downloadAllImageFromServerBySpMa, updateImageProduct } from '../../redux/apiRequest';
+
+function UpdateImageProduct({ closeAddImageModal, variantId }) {
     const [images, setImages] = useState([]);
+    const [deleteImages, setDeleteImages] = useState([]);
+    const [updateImages, setUpdateImages] = useState([]);
 
     useEffect(() => {
-      const temp = imagesProductVariant.find(images => images.id === idImageModal)
+        setDeleteImages([]);
+        setUpdateImages([]);
+    }, []);
 
-      if(temp) {
-        setImages(temp.images)
-      }
-      
-    },[])
-   
-    
+    useEffect(() => {
+        const fetchImages = async () => {
+            try {
+                const res = await downloadAllImageFromServerBySpMa(variantId);
+                setImages(res);
+            } catch (error) {
+                console.error('Error downloading images:', error);
+            }
+        };
+        fetchImages();
+    }, [variantId]);
 
-    // Handle click change
-    const handleChange = () => {
-        if(images.length === 0) {
-          toast.warn("Bạn chưa chọn ảnh nào!");
-          closeAddImage()
-        }
-        handleImageProductVariant(images);
-        toast.success("Sửa ảnh thành công!!!")
-        closeAddImage()
-    };
-    // Handle event onChange images
     const handleImageChange = (e) => {
-      
         const files = Array.from(e.target.files); // Lấy danh sách file từ input
-       
+
         const newImages = files.map((file) => ({
             file,
-            preview: URL.createObjectURL(file), // Tạo preview URL cho ảnh
+            imageUrl: URL.createObjectURL(file), // Tạo preview URL cho ảnh
         }));
 
         setImages((prevImages) => [...prevImages, ...newImages]); // Thêm ảnh mới vào state
-        
+        setUpdateImages((prev) => [...prev, ...newImages]);
     };
-    const handleRemoveImage = (index) => {
+    const handleRemoveImage = (index, id) => {
+        if (id) {
+            setDeleteImages((prev) => [...prev, id]);
+        }
         setImages((prev) => prev.filter((_, i) => i !== index)); // Xóa ảnh theo index
     };
 
+    const handleChange = () => {
+        if (deleteImages.length !== 0) {
+            deleteImages.forEach((id) => callAPIdeleteImageByID(id));
+        }
+        if (updateImages.length !== 0) {
+            callAPIUpdateImages(updateImages, variantId);
+        }
+        closeAddImageModal();
+    };
+
+    const callAPIUpdateImages = async (files, id) => {
+        try {
+            await updateImageProduct(files, id);
+            toast.success('Thêm ảnh thành công');
+        } catch (error) {
+            console.log(error);
+            toast.error('Thêm ảnh thất bại');
+        }
+    };
+
+    const callAPIdeleteImageByID = async (id) => {
+        try {
+            await deleteImageById(id);
+            toast.success('Xóa ảnh thành công');
+        } catch (error) {
+            console.log(error);
+            toast.error('Xóa ảnh thất bại!');
+        }
+    };
+
+    useEffect(() => {
+        console.log(images);
+        console.log(deleteImages);
+    }, [images, deleteImages]);
     return (
         <div onClick={(e) => e.stopPropagation()} className="w-[380px] h-full bg-white absolute right-0 p-4">
             <div className="flex justify-between font-sans font-medium text-[20px]">
                 <span>Ảnh sản phẩm</span>
-                <CloseIcon onClick={() => closeAddImage()} className="cursor-pointer" />
+                <CloseIcon onClick={() => closeAddImageModal()} className="cursor-pointer" />
             </div>
             <div className="flex mt-6 gap-4 flex-wrap">
-                {images.map((img, index) => (
+                {images?.map((img, index) => (
                     <div key={index} className="flex relative">
                         <img
                             className="w-[100px] h-[100px] object-cover rounded-md"
-                            src={img.preview}
+                            src={img.imageUrl}
                             alt={`Image ${index}`}
                         />
                         <CloseIcon
                             className="absolute -top-2 -right-2 text-red-600 bg-white rounded-full cursor-pointer"
-                            onClick={() => handleRemoveImage(index)}
+                            onClick={() => handleRemoveImage(index, img.id)}
                         />
                     </div>
                 ))}
@@ -106,4 +141,4 @@ function AddImageProduct({ closeAddImage, idImageModal, handleImageProductVarian
     );
 }
 
-export default AddImageProduct;
+export default UpdateImageProduct;
