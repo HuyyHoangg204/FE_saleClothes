@@ -34,8 +34,20 @@ function UpdateImageProduct({ closeAddImageModal, variantId }) {
             imageUrl: URL.createObjectURL(file), // Tạo preview URL cho ảnh
         }));
 
-        setImages((prevImages) => [...prevImages, ...newImages]); // Thêm ảnh mới vào state
-        setUpdateImages((prev) => [...prev, ...newImages]);
+        setImages((prevImages) => {
+            // Kiểm tra xem prevImages có phải là mảng không
+            if (Array.isArray(prevImages)) {
+                return [...prevImages, ...newImages]; // Thêm ảnh mới vào state
+            }
+            return newImages; // Nếu không phải là mảng, trả về newImages
+        });
+        setUpdateImages((prev) => {
+            // Kiểm tra xem prev có phải là mảng không
+            if (Array.isArray(prev)) {
+                return [...prev, ...newImages];
+            }
+            return newImages; // Nếu không phải là mảng, trả về newImages
+        });
     };
     const handleRemoveImage = (index, id) => {
         if (id) {

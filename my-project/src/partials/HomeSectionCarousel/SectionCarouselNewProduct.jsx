@@ -1,20 +1,34 @@
 import HomeSectionCard from "../HomeSectionCard/HomeSectionCard";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import AliceCarousel from "react-alice-carousel";
 import "react-alice-carousel/lib/alice-carousel.css";
 import ButtonSeeMore from "../../components/ButtonSeeMore";
 import icons from "../../assets/icons";
+import {getNewProduct} from "~/redux/apiRequest"
 
 function SectionCaroselNewProduct() {
   const carouselRef = useRef(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [newProduct, setNewProduct] =  useState(null)
   const responsive = {
     0: { items: 1 },
     720: { items: 3 },
     1024: { items: 5 },
   };
-  const items = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1].map((item) => (
-    <HomeSectionCard />
+  useEffect(() => {
+    callApiGetNewProduct()
+  },[])
+
+
+  const callApiGetNewProduct = async () => {
+    const res = await getNewProduct();
+    if(res) {
+      setNewProduct(res);
+    }
+  }
+
+  const items = newProduct?.map((item) => (
+    <HomeSectionCard item = {item}/>
   ));
 
   const prevActive = () => {
@@ -61,7 +75,7 @@ function SectionCaroselNewProduct() {
           />
         </div>
       )}
-      {activeIndex !== items.length - 5 && (
+      {activeIndex !== items?.length - 5 && (
         <div className="z-1">
           <img
             onClick={nextActive}

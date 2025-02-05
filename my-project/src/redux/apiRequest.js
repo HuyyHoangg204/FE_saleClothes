@@ -424,6 +424,21 @@ export const addProductVariant = async (productVariant) => {
     }
 }
 
+export const updateProductVariant = async (productVariant, variant_id) => {
+    try {
+        const accessToken = localStorage.getItem('token');
+        const config = {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        };
+        const res = await axiosInstance.put(REST_API_V1_URL + `/update_productVariant/${variant_id}`,productVariant,config)
+        return res.data
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 export const getProductToShowManager = async () => {
     try {
         const accessToken = localStorage.getItem('token');
@@ -475,6 +490,15 @@ export const deleteProductVariant = async (id) => {
             },
         };
         await axiosInstance.delete(REST_API_V1_URL + `/delete_product_variant/${id}`, config);
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+export const getNewProduct = async () => {
+    try {
+        const res = await axiosInstance.get(REST_API_V1_URL + `/newProduct`);
+        return res.data.result;
     } catch (error) {
         console.log(error)
     }

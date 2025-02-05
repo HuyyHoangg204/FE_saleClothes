@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import {
     addColorProduct,
+    addProduct,
+    addProductVariant,
     deleteProductVariant,
     downloadAllImageFromServerBySpMa,
     getAllColorProduct,
@@ -8,6 +10,7 @@ import {
     getProductById,
     updateImageProduct,
     updateProduct,
+    updateProductVariant,
 } from '../redux/apiRequest';
 import { useDispatch, useSelector } from 'react-redux';
 import AddProductElement from './AddProductElement';
@@ -24,6 +27,7 @@ function DrawerUpdate({
     productBySpMa,
     dmcMa,
     fetchProduct,
+    closeDrawerUpdate,
     maSp,
     selectedProductId,
 }) {
@@ -40,9 +44,9 @@ function DrawerUpdate({
     const [colors, setColors] = useState([]);
     const [showUpdateImage, setShowUpdateImageProduct] = useState(false);
     const [variantId, setVariantId] = useState(null);
-    
+
     const [deleteTypeProduct, setDeleteTypeProduct] = useState([]);
-    const [updateTypeProduct, setUpdateTypeProduct] = useState([]);
+    const [updateNewTypeProduct, setUpdateNewTypeProduct] = useState([]);
     const [productVariantData, setProductVariantData] = useState([]);
 
     useEffect(() => {
@@ -67,15 +71,7 @@ function DrawerUpdate({
 
     const callAPIGetProductVariant = async () => {
         const res = await getAllProductsVariantByProductID(selectedProductId);
-        if(res) {
-            console.log(res)
-            const newVariant = res.map((variant) => {
-                console.log(variant)
-               const color = colors?.find(c => c.colorID === variant.color_id)
-               console.log(color)
-            })
-            // setTypeProduct(res);
-        }
+        setTypeProduct(res);
     };
 
     useEffect(() => {
@@ -107,6 +103,9 @@ function DrawerUpdate({
         handleClickChooseColor();
     }, []);
     //Handle click update product =================================================================
+    // useEffect(() => {
+    //     console.log(typeProduct)
+    // }, [typeProduct])
     const handleClickUpdateProduct = () => {
         const newProduct = {
             name: productName,
@@ -119,20 +118,37 @@ function DrawerUpdate({
         };
         if (validateNewProduct(newProduct)) {
             callAPIUpdateProduct(newProduct);
+
             if (deleteTypeProduct.length > 0) {
-                deleteTypeProduct.forEach((variantid) => {
-                    callAPIDeleteTypeProduct(variantid);
+                deleteTypeProduct.forEach((productVariantId) => {
+                    callAPIDeleteTypeProduct(productVariantId);
                 });
             }
-            if (updateTypeProduct.length > 0) {
-                const newProductVariant = {
-                    color_id: updateColorId,
-                    product_id: selectedProductId,
-                    size: updateSizes,
-                    stockQuantity: updateStock,
-                };
-                console.log(newProductVariant);
+            if (updateNewTypeProduct.length > 0) {
+                console.log(updateNewTypeProduct);
+                updateNewTypeProduct.forEach((variant) => {
+                    if (variant.id) {
+                        const newVariant = {
+                            product_id: selectedProductId,
+                            color_id: variant.color_id,
+                            size: variant.size,
+                            stockQuantity: variant.stockQuantity,
+                        };
+                        if (validateNewVariant(newVariant)) {
+                            addProductVariant(newVariant);
+                        }
+                    } else {
+                        const newVariant = {
+                            color_id: variant.color_id,
+                            size: variant.size,
+                            stockQuantity: variant.stockQuantity,
+                        };
+                        updateProductVariant(newVariant, variant.variant_id);
+                    }
+                });
             }
+            closeDrawerUpdate();
+            fetchProduct();
             toast.success('Update sản phẩm thành công.');
         }
     };
@@ -197,6 +213,22 @@ function DrawerUpdate({
         }
         return checked;
     };
+    const validateNewVariant = (variant) => {
+        let checked = true;
+        if (variant.color_id == undefined) {
+            toast.error('Vui lòng chọn màu sản phẩm!!!');
+            checked = false;
+        }
+        if (variant.size.length < 1) {
+            toast.error('Vui lòng chọn size sản phẩm!!!');
+            checked = false;
+        }
+        if (variant.stockQuantity <= 0) {
+            toast.error('Vui lòng nhập đúng số lượng sản phẩm!!!');
+            checked = false;
+        }
+        return checked;
+    };
     //Handle add product variant =================================================================
     const handleAddTypeProduct = () => {
         const newProduct = {
@@ -205,37 +237,52 @@ function DrawerUpdate({
             size: [],
             color_id: null,
             colorCode: null,
-            colorName: "",
+            colorName: '',
         };
         setTypeProduct((prev) => [...prev, newProduct]);
+        setUpdateNewTypeProduct((prev) => [...prev, newProduct]);
     };
     //Handle remove product variant =================================================================
     const handleRemoveTypeProduct = (productVariant) => {
-        console.log(productVariant.id)
-        console.log(typeProduct)
-        const newTypeProduct = typeProduct.filter((product) => product.id !== productVariant.id);
-        setTypeProduct(newTypeProduct);
+        if (typeProduct.length > 1) {
+            const newTypeProduct = typeProduct.filter(
+                (product) => product.variant_id !== productVariant.variant_id || product.id !== productVariant.id,
+            );
+            setTypeProduct(newTypeProduct);
+            if (!productVariant.id) {
+                const removedProduct = typeProduct.find((product) => product.variant_id === productVariant.variant_id);
 
-        const removedProduct = typeProduct.find((product) => product.id === productVariant.id);
-        if (removedProduct?.variant_id) {
-            setDeleteTypeProduct((prev) => [...prev, removedProduct.variant_id]);
+                if (removedProduct?.variant_id) {
+                    setDeleteTypeProduct((prev) => [...prev, removedProduct.variant_id]);
+                }
+            } else {
+                const removedNewTypeProduct = updateNewTypeProduct.filter(
+                    (product) => product.id !== productVariant.id,
+                );
+
+                setUpdateNewTypeProduct(removedNewTypeProduct);
+            }
+        } else {
+            toast.error('Phải có tối thiểu 1 loại sản phẩm!!!');
         }
-       
     };
-    useEffect(() => {
-        console.log(typeProduct)
-    },[typeProduct])
-
 
     const handleAddProductVariantData = (index, color_id, size, stockQuantity, colorCode, colorName) => {
-        const data = [...typeProduct]
-        data[index] = {...data[index], color_id: color_id, size: size, stockQuantity: stockQuantity,colorCode : colorCode, colorName: colorName}
+        const data = [...typeProduct];
+        data[index] = {
+            ...data[index],
+            color_id: color_id,
+            size: size,
+            stockQuantity: stockQuantity,
+            colorCode: colorCode,
+            colorName: colorName,
+        };
         setProductVariantData(data);
     };
     useEffect(() => {
-        setTypeProduct(productVariantData)
-    },[productVariantData])
-
+        setUpdateNewTypeProduct(productVariantData);
+        setTypeProduct(productVariantData);
+    }, [productVariantData]);
 
     const handleProductNameChange = (e) => {
         setProductName(e.target.value);

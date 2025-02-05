@@ -1651,7 +1651,7 @@ function Product() {
                     subCategory={subCategory}
                     closeModal={closeModal}
                     handleCategoryChange={handleCategoryChange}
-                    dmcMa={dmcMa}
+                    dmcMa={dmcMa}t
                     fetchProduct={fetchProduct}
                     showAddImage={showAddImage}
                     selectedProductId = {selectedProductId}
