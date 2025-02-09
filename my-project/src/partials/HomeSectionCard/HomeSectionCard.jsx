@@ -3,11 +3,14 @@ import icons from '../../assets/icons';
 import ModalAddCart from '../../modal/ModalAddCart/ModalAddCart';
 import DoneIcon from '@mui/icons-material/Done';
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from 'react-router-dom';
 
 function HomeSectionCard({ item }) {
     const [showModalAddCard, setShowModalAddCard] = useState(false);
     const [chooseVariant, setChooseVariant] = useState(item?.variants[0]);
     const [hovered, setHovered] = useState(false);
+
+    const navigate = useNavigate();
 
     const toggleShowModalAddCard = () => {
         setShowModalAddCard((prev) => !prev);
@@ -16,12 +19,17 @@ function HomeSectionCard({ item }) {
         setChooseVariant();
     };
 
+    const handleNavigateDetailProduct =  () => {
+        navigate(`/product/${item?.name}`, {state: {productId: item?.productId}})
+    }
+
     return (
         <div className="w-[246px] h-[490px] bg-white">
             <div 
                 className="cursor-pointer h-[369px] relative overflow-hidden"
                 onMouseEnter={() => setHovered(true)}
                 onMouseLeave={() => setHovered(false)}
+                onClick={handleNavigateDetailProduct}
             >
                 <AnimatePresence mode="wait">
                     <motion.img 
@@ -55,7 +63,7 @@ function HomeSectionCard({ item }) {
                         <img className="w-5 h-5 bg-white" src={icons.iconFavorite} alt="" />
                     </div>
                 </div>
-                <div className="font-sans font-light text-[18px] mb-2">{item?.name}</div>
+                <div className="font-sans font-light text-[18px] mb-2 truncate w-full">{item?.name}</div>
                 <div className="flex items-center justify-between">
                     <span className="font-sans font-semibold text-xl">
                         {' '}

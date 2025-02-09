@@ -53,6 +53,12 @@ const REST_AUTH_BASE_URL = 'http://localhost:8081/auth';
 const REST_API_BASE_URL = 'http://localhost:8081/api';
 const REST_API_V1_URL = 'http://localhost:8081/api/v1';
 
+//get cookie
+const getCookie = (name) => {
+    const cookies = document.cookie.split("; ").find(row => row.startsWith(name + "="));
+    return cookies ? JSON.parse(cookies.split("=")[1]) : [];
+};
+
 //Login
 export const loginUser = async (user, dispatch, navigate) => {
     dispatch(loginStart());
@@ -407,6 +413,15 @@ export const getAllColorProduct = async () => {
         console.error(err);
     }
 };
+export const getColorById = async (id) => {
+    try {
+       const res = await axiosInstance.get(REST_API_V1_URL + `/color/${id}`);
+       return res.data;
+    } catch (err) {
+        console.error(err);
+    }
+};
+
 
 export const addProductVariant = async (productVariant) => {
     try {
@@ -501,5 +516,51 @@ export const getNewProduct = async () => {
         return res.data.result;
     } catch (error) {
         console.log(error)
+    }
+}
+export const getBestSellerProduct = async () => {
+    try {
+        const res = await axiosInstance.get(REST_API_V1_URL + `/bestSellerProduct`);
+        return res.data.result;
+    } catch (error) {
+        console.log(error)
+    }
+}
+export const getFlashSaleProduct = async () => {
+    try {
+        const res = await axiosInstance.get(REST_API_V1_URL + `/flashSaleProduct`);
+        return res.data.result;
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+export const getRecommendProduct = async () => {
+    try {
+        const res = await axiosInstance.get(REST_API_V1_URL + `/recommendProduct`);
+        return res.data.result;
+    } catch (error) {
+        console.log(error)
+    }
+}
+export const getProductDetail = async (productId) => {
+    try {
+        const res = await axiosInstance.get(REST_API_V1_URL + `/detailProduct/${productId}`);
+        return res.data.result;
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+export const getListProductByIds = async () => {
+    try {
+        const productIds = getCookie("productIds");
+        if (productIds.length === 0) return []; // Nếu không có ID nào, trả về mảng rỗng
+        const queryString = productIds.join(","); // Chuyển mảng thành chuỗi query string
+        const res = await axiosInstance.get(`${REST_API_V1_URL}/productsByIds?ids=${queryString}`);
+        return res.data.result;
+    } catch (error) {
+        console.log(error)
+        return [];
     }
 }

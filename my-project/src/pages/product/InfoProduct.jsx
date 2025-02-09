@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
 import StarIcon from '@mui/icons-material/Star';
@@ -10,19 +10,49 @@ import RemoveIcon from '@mui/icons-material/Remove';
 
 import InfoSizeModal from '~/modal/InfoSizeModal/InfoSizeModal.jsx';
 import '~/css/sortProduct.css';
+import { getColorById } from '../../redux/apiRequest';
 
-function InfoProduct() {
+function InfoProduct({ dataProduct }) {
     const [selectedImageIndex, setSelectedImageIndex] = useState(0); // Lưu chỉ số ảnh đã chọn
-    const [selectedColor, setSelectedColor] = useState('');
+    const [chooseVariant, setChooseVariant] = useState(null);
+    const [dataColor, setDataColor] = useState(null);
+    const [selectedColor, setSelectedColor] = useState(null);
     const [selectedSize, setSelectedSize] = useState(null);
     const [openModalSize, setOpenModalSize] = useState(false);
     const [isFavorite, setIsFavorite] = useState(false);
     const [fade, setFade] = useState(false); // Trạng thái để điều khiển hiệu ứng fade
     const [showDescription, setShowDescription] = useState(false);
+    const [showMaterial, setShowMaterial] = useState(false);
+    const [showIntruction, setShowIntruction] = useState(false);
+    const [loading, setLoading] = useState(true); // ✅ Thêm trạng thái loading
+
+    //Select variant first when component mount
+    useEffect(() => {
+        if (dataProduct && dataProduct.variants && dataProduct.variants.length > 0) {
+            setChooseVariant(dataProduct.variants[0]);
+            setLoading(false); // ✅ Khi có dữ liệu, tắt loading
+        }
+    }, [dataProduct]);
+
+    useEffect(() => {
+        console.log(chooseVariant);
+
+        const fetchColor = async () => {
+            try {
+                const result = await getColorById(chooseVariant.color_id);
+                setDataColor(result.result);
+            } catch (error) {
+                console.error('Lỗi khi lấy màu:', error);
+            }
+        };
+        setSelectedColor(chooseVariant?.color_id);
+        fetchColor();
+    }, [chooseVariant]);
 
     // Handler khi chọn màu
-    const handleColorSelect = (color) => {
-        setSelectedColor(color);
+    const handleColorSelect = (colorId, variant) => {
+        setChooseVariant(variant);
+        setSelectedColor(colorId);
     };
 
     // Danh sách các size
@@ -49,19 +79,14 @@ function InfoProduct() {
     const toggleShowDescription = () => {
         setShowDescription(!showDescription);
     };
+    const toggleShowMaterial = () => {
+        setShowMaterial(!showMaterial);
+    };
+    const toggleShowIntruction = () => {
+        setShowIntruction(!showIntruction);
+    };
 
-    const items = [
-        '/images/maunu1.webp',
-        '/images/maunu2.webp',
-        '/images/maunu1.webp',
-        '/images/maunu2.webp',
-        '/images/maunu1.webp',
-        '/images/maunu1.webp',
-        '/images/maunu2.webp',
-        '/images/maunu1.webp',
-        '/images/maunu2.webp',
-        '/images/maunu1.webp',
-    ];
+    const items = chooseVariant?.imageUrl;
     const swiperRef = useRef(null);
 
     const handleImageClick = (index) => {
@@ -84,6 +109,13 @@ function InfoProduct() {
             }
         }
     };
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-20">
+                <div className="w-8 h-8 border-4 border-gray-300 border-t-black rounded-full animate-spin"></div>
+            </div>
+        );
+    }
     return (
         <div className="w-full flex mt-6 space-x-16">
             <div className="flex space-x-6">
@@ -123,7 +155,7 @@ function InfoProduct() {
             </div>
             {/* info product */}
             <div className="flex flex-col w-full">
-                <h2 className="font-sans font-semibold text-[26px]">Áo sơ mi Regular Linen Cotton</h2>
+                <h2 className="font-sans font-semibold text-[26px]">{dataProduct?.name}</h2>
                 <div className="flex items-center ">
                     <span className="font-sans font-light text-[14px] mr-10">Mã sp: 3IT24W001</span>
                     <div className="flex items-center">
@@ -137,51 +169,45 @@ function InfoProduct() {
                 </div>
                 {/* price */}
                 <div className="my-6">
-                    <span className="font-sans font-semibold text-[24px]">127.000 đ</span>
+                    <span className="font-sans font-semibold text-[24px]">
+                        {dataProduct?.base_price?.toLocaleString('vi-VN')}đ
+                    </span>
                     <div className="flex space-x-6 items-center">
                         <span className="font-sans font-light text-[18px] relative w-auto">
-                            300.000 đ<div className="h-[1px] bg-black absolute w-full top-1/2"></div>
+                            {dataProduct?.oldPrice?.toLocaleString('vi-VN')}đ
+                            <div className="h-[1px] bg-black absolute w-full top-1/2"></div>
                         </span>
-                        <span className="w-auto p-1 bg-red-700 text-white font-sans font-medium text-[14px]">-30%</span>
+                        <span className="w-auto p-1 bg-red-700 text-white font-sans font-medium text-[14px]">
+                            -{dataProduct?.discount_percentage}%
+                        </span>
                     </div>
                 </div>
                 {/* color */}
                 <div>
-                    <span className="font-sans font-semibold text-[20px]">Màu sắc: Ghi sáng</span>
+                    <span className="font-sans font-semibold text-[20px]">Màu sắc: {dataColor?.colorName} </span>
                     <div className="flex space-x-4 mt-2">
-                        <div
-                            className="bg-white w-[30px] h-[30px] border flex justify-center items-center cursor-pointer"
-                            onClick={() => handleColorSelect('black')}
-                        >
-                            <div className="relative">
-                                <div className="bg-black w-[20px] h-[20px] rounded-full"></div>
-                                {selectedColor === 'black' && (
-                                    <img src={icons.iconDone} alt="done" className="absolute inset-0 w-full h-full" />
-                                )}
+                        {dataProduct?.variants.map((variant, index) => (
+                            <div
+                                key={index}
+                                className={`bg-white w-[30px] h-[30px] border flex justify-center items-center cursor-pointer 
+                                ${selectedColor === variant.color_id ? 'border-black' : ''}`}
+                                onClick={() => handleColorSelect(variant.color_id, variant)}
+                            >
+                                <div className="relative">
+                                    <div
+                                        className="w-[20px] h-[20px] rounded-full"
+                                        style={{ backgroundColor: variant.colorCode }}
+                                    ></div>
+                                    {selectedColor === variant.color_id && (
+                                        <img
+                                            src={icons.iconDone}
+                                            alt="done"
+                                            className="absolute inset-0 w-full h-full"
+                                        />
+                                    )}
+                                </div>
                             </div>
-                        </div>
-                        <div
-                            className="bg-white w-[30px] h-[30px] border flex justify-center items-center cursor-pointer"
-                            onClick={() => handleColorSelect('red')}
-                        >
-                            <div className="relative">
-                                <div className="bg-red-700 w-[20px] h-[20px] rounded-full"></div>
-                                {selectedColor === 'red' && (
-                                    <img src={icons.iconDone} alt="done" className="absolute inset-0 w-full h-full" />
-                                )}
-                            </div>
-                        </div>
-                        <div
-                            className="bg-white w-[30px] h-[30px] border flex justify-center items-center cursor-pointer"
-                            onClick={() => handleColorSelect('yellow')}
-                        >
-                            <div className="relative">
-                                <div className="bg-yellow-600 w-[20px] h-[20px] rounded-full"></div>
-                                {selectedColor === 'yellow' && (
-                                    <img src={icons.iconDone} alt="done" className="absolute inset-0 w-full h-full" />
-                                )}
-                            </div>
-                        </div>
+                        ))}
                     </div>
                 </div>
                 {/* Size */}
@@ -194,19 +220,26 @@ function InfoProduct() {
                         </div>
                     </div>
                     <div className="flex space-x-4 mt-3">
-                        {sizes.map((size) => (
-                            <div
-                                key={size}
-                                className={`w-10 h-8 flex justify-center items-center border cursor-pointer ${
-                                    selectedSize === size
-                                        ? 'bg-black text-white hover:bg-white hover:text-black'
-                                        : 'bg-white text-black hover:bg-black hover:text-white'
-                                }`}
-                                onClick={() => handleSizeSelect(size)}
-                            >
-                                <span>{size}</span>
-                            </div>
-                        ))}
+                        {sizes.map((size) => {
+                            const isAvailable = chooseVariant?.size?.includes(size);
+                            return (
+                                <div
+                                    key={size}
+                                    className={`w-10 h-8 flex justify-center items-center border
+                                        ${isAvailable ? "cursor-pointer" : "opacity-50 cursor-not-allowed"} 
+                                        ${
+                                            isAvailable
+                                                ? selectedSize === size
+                                                    ? "bg-black text-white hover:bg-white hover:text-black"
+                                                    : "bg-white text-black hover:bg-black hover:text-white"
+                                                : "bg-gray-200 text-gray-400 hover:bg-gray-200" // Không đổi màu khi hover
+                                        }`}
+                                        onClick={() => isAvailable && handleSizeSelect(size)} // Chỉ gọi hàm nếu size có sẵn
+                                >
+                                    <span>{size}</span>
+                                </div>
+                            );
+                        })}
                     </div>
                     {openModalSize && <InfoSizeModal handleCloseModalSize={handleCloseModalSize} />}
                 </div>
@@ -249,20 +282,52 @@ function InfoProduct() {
                     </div>
                     {/* Description */}
                     {showDescription && (
-                        <div className="slide-down">
-                            Áo khoác gió nữ hai lớp có mũ. Phom dáng rộng vừa, phù hợp với thời tiết gió, mưa nhẹ.
+                        <div className="slide-down" style={{ whiteSpace: 'pre-line' }}>
+                            {dataProduct?.description}
                         </div>
                     )}
                     <div className="h-[1px] w-full bg-black opacity-55"></div>
-                    <div className="flex justify-between cursor-pointer">
+                    <div onClick={toggleShowMaterial} className="flex justify-between cursor-pointer">
                         <span className="font-sans font-medium text-[16px]">Chất liệu</span>
-                        <img className="w-[20px] h-5" src={icons.iconPlus} alt="" />
+                        {showMaterial ? (
+                            <RemoveIcon /> // Hiển thị icon Remove khi mô tả mở
+                        ) : (
+                            <img
+                                className={`w-[20px] h-5 transition-transform duration-500 ease-in-out ${
+                                    showMaterial ? 'rotate-180' : 'rotate-0'
+                                }`}
+                                src={icons.iconPlus} // Hiển thị iconPlus khi mô tả đóng
+                                alt="icon"
+                            />
+                        )}
                     </div>
+                    {/* Material */}
+                    {showMaterial && (
+                        <div className="slide-down" style={{ whiteSpace: 'pre-line' }}>
+                            {dataProduct?.material}
+                        </div>
+                    )}
                     <div className="h-[1px] w-full bg-black opacity-55"></div>
-                    <div className="flex justify-between cursor-pointer">
+                    <div onClick={toggleShowIntruction} className="flex justify-between cursor-pointer">
                         <span className="font-sans font-medium text-[16px]">Hướng dãn sử dụng</span>
-                        <img className="w-[20px] h-5" src={icons.iconPlus} alt="" />
+                        {showIntruction ? (
+                            <RemoveIcon /> // Hiển thị icon Remove khi mô tả mở
+                        ) : (
+                            <img
+                                className={`w-[20px] h-5 transition-transform duration-500 ease-in-out ${
+                                    showIntruction ? 'rotate-180' : 'rotate-0'
+                                }`}
+                                src={icons.iconPlus} // Hiển thị iconPlus khi mô tả đóng
+                                alt="icon"
+                            />
+                        )}
                     </div>
+                    {/* Material */}
+                    {showIntruction && (
+                        <div className="slide-down" style={{ whiteSpace: 'pre-line' }}>
+                            {dataProduct?.instruction}
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

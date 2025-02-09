@@ -1,21 +1,40 @@
 import HomeSectionCard from "~/partials/HomeSectionCard/HomeSectionCard.jsx";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import AliceCarousel from "react-alice-carousel";
 import "react-alice-carousel/lib/alice-carousel.css";
 import ButtonSeeMore from "../../components/ButtonSeeMore";
 import icons from "../../assets/icons";
+import { getRecommendProduct } from "../../redux/apiRequest";
 
 function SectionCarouselWatchedProductr() {
   const carouselRef = useRef(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [recommendProduct, setRecommendProduct] =  useState(null)
   const responsive = {
     0: { items: 1 },
     720: { items: 3 },
     1024: { items: 4 },
   };
-  const items = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1].map((item) => (
-    <HomeSectionCard />
+
+  
+  useEffect(() => {
+    callApiGetNewProduct()
+  },[])
+
+
+  const callApiGetNewProduct = async () => {
+    const res = await getRecommendProduct();
+    if(res) {
+      setRecommendProduct(res);
+    }
+  }
+
+
+  const items = recommendProduct?.map((item) => (
+    <HomeSectionCard item = {item}/>
   ));
+
+
 
   const prevActive = () => {
     if (carouselRef.current) {
@@ -61,7 +80,7 @@ function SectionCarouselWatchedProductr() {
           />
         </div>
       )}
-      {activeIndex !== items.length - 5 && (
+      {activeIndex !== items?.length - 4 && (
         <div className="z-1">
           <img
             onClick={nextActive}
