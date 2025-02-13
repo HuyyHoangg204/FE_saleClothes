@@ -46,6 +46,7 @@ import {
     getAllImageProductFailed,
 } from './productSlice';
 import { config } from 'react-transition-group';
+import { addProductToCartFailed, addProductToCartStart, addProductToCartSuccess } from './cartSlice';
 
 //  const REST_AUTH_BASE_URL = "http://51.79.167.161:8081/auth";
 //  const REST_API_BASE_URL = "http://51.79.167.161:8081/api";
@@ -63,9 +64,9 @@ const getCookie = (name) => {
 export const loginUser = async (user, dispatch, navigate) => {
     dispatch(loginStart());
     try {
-        const res = await axios.post(REST_AUTH_BASE_URL + '/login', user);
+        const guestCartId = localStorage.getItem("guestCartId");
+        const res = await axios.post(REST_AUTH_BASE_URL + `/login?guestCartId=${guestCartId}`, user);
         dispatch(loginSuccess(res.data));
-        console.log(res.data);
         const accessToken = res.data.result.token;
         localStorage.setItem('token', accessToken);
         const decodedToken = jwtDecode(accessToken);
@@ -88,6 +89,9 @@ export const loginUser = async (user, dispatch, navigate) => {
         dispatch(loginFailed(errorPayload));
     }
 };
+
+//Refresh token 
+
 // Register
 export const registerUser = async (user, dispatch, navigate) => {
     dispatch(registerStart());
@@ -167,6 +171,8 @@ export const refreshToken = async (token) => {
         const res = await axios.post('http://localhost:8081/auth/refresh', {
             token,
         });
+        const accessToken = res.data.result.token;
+        localStorage.setItem('token', accessToken);
         return res.data;
     } catch (error) {
         console.log(error);
@@ -562,5 +568,95 @@ export const getListProductByIds = async () => {
     } catch (error) {
         console.log(error)
         return [];
+    }
+}
+//Add product to cart (before login)
+export const addProductToCartRedis = async (productId, color, size, quantity) => {
+    try {
+        const guestCartId = localStorage.getItem("guestCartId");
+        const res = await axios.post(`${REST_API_V1_URL}/${guestCartId}/add?productId=${productId}&size=${size}&color=${color}&quantity=${quantity}`)
+    } catch (error) {
+        console.log(error)
+    }
+}
+//Add product to cart (after login)
+
+export const addProductToCart = async (username,productId, color, size, quantity) => {
+    try {
+        const accessToken = localStorage.getItem('token');
+        const config = {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        };
+        const res = await axiosInstance.post(`${REST_API_V1_URL}/addToCartAfterLogin?username=${username}&productID=${productId}&size=${size}&colorId=${color}&quantity=${quantity}`,config)
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+// Get Product from cart before login
+export const getProductFromCartRedis = async (dispatch) => {
+    try {
+        dispatch(addProductToCartStart());
+        const guestCartId = localStorage.getItem("guestCartId");
+        const res = await axios.get(REST_API_V1_URL + `/getCart/${guestCartId}`)
+        dispatch(addProductToCartSuccess(res.data))
+    } catch (error) {
+        dispatch(addProductToCartFailed())
+        console.log(error);
+        
+    }
+}
+// Get Product from cart after login
+export const getProductFromCart = async (dispatch, username) => {
+    try {
+        dispatch(addProductToCartStart());
+        const accessToken = localStorage.getItem('token');
+        const config = {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        };
+        const res = await axiosInstance.get(REST_API_V1_URL + `/getCartAfterLogin/${username}`, config)
+        dispatch(addProductToCartSuccess(res.data))
+    } catch (error) {
+        dispatch(addProductToCartFailed())
+        console.log(error);
+        
+    }
+}
+
+export const getProductInCart = async (productId, colorId) => {
+    try {
+        const res = await axios.get(`${REST_API_V1_URL}/productCart/${productId}?idColor=${colorId}`)
+        return res.data;
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+//delete product in cart before login
+export const deleteProductInCart = async (productid, size, colorId) => {
+    try {
+        const guestCartId = localStorage.getItem("guestCartId");
+        const res = await axios.delete(`${REST_API_V1_URL}/${guestCartId}/removeCart?productId=${productid}&size=${size}&color=${colorId}`)
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+//delete product in cart after login
+export const deleteProductInCartAfterlogin = async (username,productId, color, size) => {
+    try {
+        const accessToken = localStorage.getItem('token');
+        const config = {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        };
+        const res = await axiosInstance.delete(`${REST_API_V1_URL}/removeCartAfterLogin?username=${username}&productId=${productId}&size=${size}&colorId=${color}`,config)
+    } catch (error) {
+        console.log(error)
     }
 }

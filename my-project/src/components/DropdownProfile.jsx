@@ -27,7 +27,9 @@ function DropdownProfile({ align }) {
 
   const trigger = useRef(null);
   const dropdown = useRef(null);
-  const logout = () => {
+  const hanlelogout = () => {
+    console.log(true);
+    
     logout(dispatch,token)
     localStorage.removeItem("token");
    
@@ -129,7 +131,7 @@ function DropdownProfile({ align }) {
               <NavLink
                 to={"/login"}
                 className="font-medium text-sm text-violet-500 hover:text-violet-600 dark:hover:text-violet-400 flex items-center py-1 px-3"
-                onClick={logout}
+                onClick={hanlelogout}
               >
                 Sign Out
               </NavLink>

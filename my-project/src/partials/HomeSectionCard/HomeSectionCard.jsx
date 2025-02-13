@@ -9,6 +9,12 @@ function HomeSectionCard({ item }) {
     const [showModalAddCard, setShowModalAddCard] = useState(false);
     const [chooseVariant, setChooseVariant] = useState(item?.variants[0]);
     const [hovered, setHovered] = useState(false);
+    const [addCartDone, setAddCartDone] = useState(true);
+
+    // useEffect(() => {
+    //     console.log(item);
+        
+    // },[])
 
     const navigate = useNavigate();
 
@@ -71,7 +77,7 @@ function HomeSectionCard({ item }) {
                     </span>
                     <div className="relative">
                         <span className="font-medium opacity-50 text-sm">
-                            {item?.oldPrice?.toLocaleString('vi-VN') ? Math.round(item.oldPrice) : ''}đ
+                            {item?.oldPrice ? Math.round(item.oldPrice).toLocaleString('vi-VN') : ''}đ
                         </span>
                         <div className="h-[1px] w-full bg-black opacity-40 absolute z-5 top-1/2"></div>
                     </div>
@@ -83,7 +89,7 @@ function HomeSectionCard({ item }) {
                             alt=""
                         />
                         {showModalAddCard && (
-                            <ModalAddCart showModalAddCard={showModalAddCard} listSize={chooseVariant?.size} />
+                            <ModalAddCart showModalAddCard={showModalAddCard} chooseVariant={chooseVariant} productId={item.productId} toggleShowModalAddCard={toggleShowModalAddCard}/>
                         )}
                     </div>
                 </div>

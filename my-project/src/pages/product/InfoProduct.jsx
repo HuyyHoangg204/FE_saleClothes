@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
+import { jwtDecode } from 'jwt-decode';
 
 import StarIcon from '@mui/icons-material/Star';
 import 'swiper/css';
@@ -10,7 +11,15 @@ import RemoveIcon from '@mui/icons-material/Remove';
 
 import InfoSizeModal from '~/modal/InfoSizeModal/InfoSizeModal.jsx';
 import '~/css/sortProduct.css';
-import { getColorById } from '../../redux/apiRequest';
+import {
+    getColorById,
+    addProductToCartRedis,
+    addProductToCart,
+    getProductFromCart,
+    getProductFromCartRedis,
+} from '../../redux/apiRequest';
+import { toast } from 'react-toastify';
+import { useDispatch } from 'react-redux';
 
 function InfoProduct({ dataProduct }) {
     const [selectedImageIndex, setSelectedImageIndex] = useState(0); // Lưu chỉ số ảnh đã chọn
@@ -26,6 +35,8 @@ function InfoProduct({ dataProduct }) {
     const [showIntruction, setShowIntruction] = useState(false);
     const [loading, setLoading] = useState(true); // ✅ Thêm trạng thái loading
 
+    const dispatch = useDispatch();
+
     //Select variant first when component mount
     useEffect(() => {
         if (dataProduct && dataProduct.variants && dataProduct.variants.length > 0) {
@@ -35,8 +46,10 @@ function InfoProduct({ dataProduct }) {
     }, [dataProduct]);
 
     useEffect(() => {
-        console.log(chooseVariant);
+        console.log(selectedSize);
+    }, [selectedSize]);
 
+    useEffect(() => {
         const fetchColor = async () => {
             try {
                 const result = await getColorById(chooseVariant.color_id);
@@ -48,6 +61,66 @@ function InfoProduct({ dataProduct }) {
         setSelectedColor(chooseVariant?.color_id);
         fetchColor();
     }, [chooseVariant]);
+
+    // Handle add product to cart
+    const handleAddProductToCart = async (size) => {
+        const accessToken = localStorage.getItem('token');
+        if (accessToken) {
+            const decodedToken = jwtDecode(accessToken);
+            if (decodedToken.exp * 1000 <= Date.now()) {
+                try {
+                    const response = refreshtoken(accessToken);
+                    const username = jwtDecode(response?.result?.token).sub;
+                    if (selectedSize === null) {
+                        toast.warning('Vui lòng chọn size!');
+                    } else {
+                        await addProductToCart(
+                            username,
+                            dataProduct?.product_id,
+                            chooseVariant?.color_id,
+                            selectedSize,
+                            1,
+                        );
+                        await getProductFromCart(dispatch, username);
+                        toast.success('Thêm vào giỏ hàng thành công!');
+                    }
+                } catch (error) {
+                    localStorage.removeItem('token');
+                    toast.error('Vui lòng đăng nhập lại!');
+                    navigate('/login');
+                }
+            } else {
+                try {
+                    const username = decodedToken.sub;
+                    if (selectedSize === null) {
+                        toast.warning('Vui lòng chọn size!');
+                    } else {
+                        await addProductToCart(
+                            username,
+                            dataProduct?.product_id,
+                            chooseVariant?.color_id,
+                            selectedSize,
+                            1,
+                        );
+                        await getProductFromCart(dispatch, username);
+                        toast.success('Thêm vào giỏ hàng thành công!');
+                    }
+                } catch (error) {
+                    console.log(error);
+                    toast.error('Thêm vào giỏ hàng thất bại');
+                }
+            }
+        } else {
+            try {
+                await addProductToCartRedis(productId, chooseVariant?.color_id, size, 1);
+                await getProductFromCartRedis(dispatch);
+                toast.success('Thêm vào giỏ hàng thành công!');
+            } catch (error) {
+                console.log(error);
+                toast.error('Thêm vào giỏ hàng thất bại');
+            }
+        }
+    };
 
     // Handler khi chọn màu
     const handleColorSelect = (colorId, variant) => {
@@ -226,15 +299,15 @@ function InfoProduct({ dataProduct }) {
                                 <div
                                     key={size}
                                     className={`w-10 h-8 flex justify-center items-center border
-                                        ${isAvailable ? "cursor-pointer" : "opacity-50 cursor-not-allowed"} 
+                                        ${isAvailable ? 'cursor-pointer' : 'opacity-50 cursor-not-allowed'} 
                                         ${
                                             isAvailable
                                                 ? selectedSize === size
-                                                    ? "bg-black text-white hover:bg-white hover:text-black"
-                                                    : "bg-white text-black hover:bg-black hover:text-white"
-                                                : "bg-gray-200 text-gray-400 hover:bg-gray-200" // Không đổi màu khi hover
+                                                    ? 'bg-black text-white hover:bg-white hover:text-black'
+                                                    : 'bg-white text-black hover:bg-black hover:text-white'
+                                                : 'bg-gray-200 text-gray-400 hover:bg-gray-200' // Không đổi màu khi hover
                                         }`}
-                                        onClick={() => isAvailable && handleSizeSelect(size)} // Chỉ gọi hàm nếu size có sẵn
+                                    onClick={() => isAvailable && handleSizeSelect(size)} // Chỉ gọi hàm nếu size có sẵn
                                 >
                                     <span>{size}</span>
                                 </div>
@@ -245,7 +318,10 @@ function InfoProduct({ dataProduct }) {
                 </div>
                 <div className="mt-8 flex flex-col">
                     <div className="flex space-x-10">
-                        <button className="flex justify-center items-center border border-black bg-black text-white w-[200px] h-[56px] rounded-2xl font-sans font-semibold text-[20px] hover:bg-white hover:text-black">
+                        <button
+                            onClick={handleAddProductToCart}
+                            className="flex justify-center items-center border border-black bg-black text-white w-[200px] h-[56px] rounded-2xl font-sans font-semibold text-[20px] hover:bg-white hover:text-black"
+                        >
                             THÊM VÀO GIỎ
                         </button>
                         <button className="flex justify-center items-center bg-white text-black w-[150px] h-[56px] rounded-2xl font-sans font-semibold text-[20px] border border-black hover:bg-black hover:text-white">
