@@ -11,10 +11,9 @@ function HomeSectionCard({ item }) {
     const [hovered, setHovered] = useState(false);
     const [addCartDone, setAddCartDone] = useState(true);
 
-    // useEffect(() => {
-    //     console.log(item);
-        
-    // },[])
+    useEffect(() => {
+        setChooseVariant(item?.variants[0]); // Reset về biến thể mặc định
+    },[item])
 
     const navigate = useNavigate();
 

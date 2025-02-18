@@ -7,7 +7,6 @@ import { toast } from 'react-toastify';
 import {
     addProduct,
     getAllDanhMuc,
-    getAllProduct,
     getDanhMucConBydmMa,
     uploadImageToFileSystem,
     getAllDanhMucCon,

@@ -14,7 +14,7 @@ function BreadCrumb({ breadcrumb }) {
   return (
     <div className="flex px-[112px] mt-3 items-center">
       {breadcrumb.map((item, index) => (
-        <div className="">
+        <div key={index} className="">
           <span onClick={() => hanleClick(item)} className="font-sans font-light text-[14px] cursor-pointer" key={index}>
             {item}
           </span>

@@ -407,14 +407,8 @@ export const addColorProduct = async (color, token) => {
 
 export const getAllColorProduct = async () => {
     try {
-        const accessToken = localStorage.getItem('token');
-        const config = {
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-            },
-        };
-       const res = await axiosInstance.get(REST_API_V1_URL + '/colors', config);
-       return res.data;
+       const res = await axiosInstance.get(REST_API_V1_URL + '/colors');
+       return res.data.result;
     } catch (err) {
         console.error(err);
     }
@@ -570,6 +564,46 @@ export const getListProductByIds = async () => {
         return [];
     }
 }
+
+//Get product by category 
+export const getListProductByCategory = async (dmcId,page, size, isSort) => {
+    try {
+        const res = await axiosInstance.get(`${REST_API_V1_URL}/productsByCategory/${dmcId}?page=${page}&size=${size}&isSort=${isSort}`);
+        return res.data.result;
+    } catch (error) {
+        console.log(error)
+        return [];
+    }
+}
+
+//Filter product
+export const filterListProductByCategory = async (dmcId, page, size, isSort, sizeClothes = '', colorID = 0, fromPrice = 0, toPrice = 0) => {
+    try {
+        // Tạo một đối tượng queryParams để chỉ bao gồm các tham số cần thiết
+        let queryParams = `?page=${page}&size=${size}&isSort=${isSort}`;
+
+        // Chỉ thêm tham số nếu chúng không phải là giá trị mặc định
+        if (sizeClothes) {
+            queryParams += `&sizeClothes=${sizeClothes}`;
+        }
+        if (colorID) {
+            queryParams += `&color=${colorID}`;
+        }
+        if (fromPrice) {
+            queryParams += `&fromPrice=${fromPrice}`;
+        }
+        if (toPrice) {
+            queryParams += `&toPrice=${toPrice}`;
+        }
+
+        const res = await axiosInstance.get(`${REST_API_V1_URL}/filterProduct/${dmcId}${queryParams}`);
+        return res.data.result;
+    } catch (error) {
+        console.log(error);
+        return [];
+    }
+}
+
 //Add product to cart (before login)
 export const addProductToCartRedis = async (productId, color, size, quantity) => {
     try {

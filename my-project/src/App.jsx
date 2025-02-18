@@ -34,7 +34,7 @@ function App() {
         <Route path="/my-account" element={<InfoUser breadcrumb = {['TRANG CHỦ', 'THÔNG TIN CÁ NHÂN']}/>} />
         <Route path="/" element={<Home />} />
         <Route path="/product/:name" element={<MainProduct/>} />
-        <Route path="/nam/ao-so-mi" element={<SalePages breadcrumb = {['Trang chủ', 'Nam', 'Áo sơ mi']}/>}/>
+        <Route path="/danh-muc/:gender/:categorySlug" element={<SalePages/>}/>
         <Route path= "/order" element= {<Order/>}/>
       </Routes>
       <ToastContainer position="top-right" autoClose={3000} />
