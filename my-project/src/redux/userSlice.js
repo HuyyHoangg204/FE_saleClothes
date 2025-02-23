@@ -30,7 +30,7 @@ const userSlice = createSlice({
     },
     //get user
     getUserStart: (state) => {
-        state.users.isFetching = true;
+        state.user.isFetching = true;
     },
     getUserSuccess: (state, action) => {
         state.user.isFetching = false;

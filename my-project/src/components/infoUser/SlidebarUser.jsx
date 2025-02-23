@@ -1,6 +1,7 @@
 import icon from '../../assets/icons/index.jsx';
 import { useState } from 'react';
 import { useNavigate } from "react-router";
+import PersonIcon from '@mui/icons-material/Person';
 
 function SlidebarUser({
     currentPage,
@@ -9,7 +10,8 @@ function SlidebarUser({
     handleClickAddressUser,
     handleClickFavoriteUser,
     handleClickViewedUser,
-    handleClickVoucherUser
+    handleClickVoucherUser,
+    username
 }) {
     const navigate = useNavigate()
     const handleLogout = () => {
@@ -20,12 +22,9 @@ function SlidebarUser({
         <div className="w-[320px] bg-white mr-[25px] h-[730px]">
             {/* img */}
             <div className="w-full flex flex-col items-center mt-5 mb-10">
-                <img
-                    className="w-[90px] h-[90px] rounded-full object-cover"
-                    src="https://scontent.fhan12-1.fna.fbcdn.net/v/t39.30808-6/461049159_1068558491586290_3845263124647077920_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=6ee11a&_nc_eui2=AeE871c_8NOMyWyK944wYROoJBTiHj56BGMkFOIePnoEY_A_zRRRhJOF-f8juVpd_YuRIxKEMPOP9tVlVBhhD00l&_nc_ohc=LwwVGdvN8twQ7kNvgHfb0IK&_nc_zt=23&_nc_ht=scontent.fhan12-1.fna&_nc_gid=AQfLGWr5v4PDHjXHcqxKeWp&oh=00_AYAAej82-P73Knm9EH8sR2yT018vmmfVD8O57CdSmJgixg&oe=672D08DE"
-                    alt=""
-                />
-                <div className="mt-2 font-semibold">ADMIN</div>
+            <PersonIcon style={{ fontSize: "50px" }} />
+
+                <div className="mt-2 font-semibold w-[90%] text-center truncate">{username}</div>
             </div>
             <ul className="cursor-pointer">
                 <li

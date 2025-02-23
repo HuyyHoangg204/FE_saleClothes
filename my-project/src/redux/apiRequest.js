@@ -138,23 +138,24 @@ export const getUserById = async (username, token, dispatch) => {
         const res = await axiosInstance.get(REST_API_BASE_URL + `/khachhang/${username}`, {
             headers: { Authorization: `Bearer ${token}` },
         });
-        dispatch(getUserSuccess(res.data));
+        dispatch(getUserSuccess(res.data.result));
     } catch (error) {
         console.error(error);
         dispatch(getUserFailed());
     }
 };
-// get khachhang by id
-export const getInfoUser = async (token, dispatch) => {
-    dispatch(getUserStart());
+// update khachhang
+export const updateUser = async (username, user) => {
+    
     try {
-        const res = await axiosInstance.get(REST_API_BASE_URL + `/khachhang/${username}`, {
+        const token = localStorage.getItem('token')
+        const res = await axiosInstance.put(REST_API_BASE_URL + `/update-khachhang/${username}`,user, {
             headers: { Authorization: `Bearer ${token}` },
         });
-        dispatch(getUserSuccess(res.data));
+        toast.success("Cập nhật thông tin cá nhân thành công")
     } catch (error) {
         console.error(error);
-        dispatch(getUserFailed());
+        toast.error("Cập nhật thông tin cá nhân thất bại!")
     }
 };
 

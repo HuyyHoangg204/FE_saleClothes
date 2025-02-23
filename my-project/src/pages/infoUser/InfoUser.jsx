@@ -11,18 +11,34 @@ import SlideViewedUser from '../../components/infoUser/SlideViewedUser.jsx';
 import SlideVoucherUser from '../../components/infoUser/SlideVoucherUser.jsx';
 import SlideOrderDetail from '../../components/infoUser/SlideOrderDetail.jsx';
 import Footer from '../../partials/Footer/Footer.jsx';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { jwtDecode } from 'jwt-decode';
+import { getUserById } from '../../redux/apiRequest.js';
 
 function InfoUser({ breadcrumb }) {
     // State để quản lý trang hiện tại
     const [currentPage, setCurrentPage] = useState('infoUser');
     const [viewingOrder, setViewingOrder] = useState(null);
 
-    const user = useSelector((state) => state.user.user?.user);
+    const dispatch = useDispatch()
+
+    const user = useSelector((state) => state?.user?.user?.user);
+    const loading = useSelector((state) => state?.user?.user?.isFetching);
 
     useEffect(() => {
-    
+        const accessToken = localStorage.getItem('token')
+        const decodedToken = jwtDecode(accessToken)
+        const fetchData = async () => {
+            await getUserById(decodedToken.sub,accessToken,dispatch)
+        }
+        fetchData()
     },[])
+
+    useEffect(() => {
+        console.log(user);
+        
+    },[user])
+
 
     // Hàm để xử lý việc hiển thị các trang khác nhau
     const handleNavigation = (page) => {
@@ -41,6 +57,13 @@ function InfoUser({ breadcrumb }) {
         setViewingOrder(null);
         setCurrentPage('orderManager');
     };
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-20">
+                <div className="w-8 h-8 border-4 border-gray-300 border-t-black rounded-full animate-spin"></div>
+            </div>
+        );
+    }
 
     return (
         <div className="w-[100%] bg-[#f5f5f5]">
@@ -53,6 +76,7 @@ function InfoUser({ breadcrumb }) {
             <div className="flex px-[120px] mt-[40px]">
                 {/* slide bar */}
                 <SlidebarUser
+                    username={user?.khUserName}
                     currentPage={currentPage}
                     handleClickInfoUser={() => handleNavigation('infoUser')}
                     handleClickOrderManager={() => handleNavigation('orderManager')}
@@ -63,7 +87,7 @@ function InfoUser({ breadcrumb }) {
                 />
 
                 {/* Render các thành phần theo trạng thái của currentPage */}
-                {currentPage === 'infoUser' && <SlideInfoUser />}
+                {currentPage === 'infoUser' && <SlideInfoUser user={user}/>}
                 {currentPage === 'orderManager' && (
                     <SlideOrderManager onViewDetails={handleViewDetails} />
                 )}
