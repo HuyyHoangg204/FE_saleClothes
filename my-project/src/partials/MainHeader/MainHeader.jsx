@@ -9,7 +9,7 @@ import '~/css/Cart.css';
 import '~/css/header.css';
 import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
-import { getProductFromCart, getProductFromCartRedis, refreshToken } from '../../redux/apiRequest';
+import { getAllProductsFavoriteByUsername, getProductFromCart, getProductFromCartRedis, refreshToken } from '../../redux/apiRequest';
 
 function MainHeader() {
     const [displayCart, setDisplayCart] = useState(false);
@@ -30,12 +30,14 @@ function MainHeader() {
                     const username = jwtDecode(response?.result?.token).sub
 
                     callApiGetProductFromCart(username)
+                    callApiGetProductsFavorites(username)
                 } catch (error) {
                     localStorage.removeItem("token")
                     callApiGetProductFromCartRedis()
                 }
             }
             callApiGetProductFromCart(decodedToken.sub) 
+            callApiGetProductsFavorites(decodedToken.sub)
         } else {
             callApiGetProductFromCartRedis()
         }
@@ -51,6 +53,9 @@ function MainHeader() {
     }
     const callApiGetProductFromCartRedis = async () => {
         await getProductFromCartRedis(dispatch)
+    }
+    const callApiGetProductsFavorites = async (username) => {
+        await getAllProductsFavoriteByUsername(username, dispatch)
     }
 
     const productFromCart = useSelector((state) => state.cart?.getProductFromCart?.currentCart);

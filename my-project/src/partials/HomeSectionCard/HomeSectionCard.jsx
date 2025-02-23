@@ -2,8 +2,13 @@ import { useEffect, useState } from 'react';
 import icons from '../../assets/icons';
 import ModalAddCart from '../../modal/ModalAddCart/ModalAddCart';
 import DoneIcon from '@mui/icons-material/Done';
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
+import { addProductToFavoritesProduct, getAllProductsFavoriteByUsername } from '../../redux/apiRequest';
+import { toast } from 'react-toastify';
+import { useDispatch, useSelector } from 'react-redux';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 
 function HomeSectionCard({ item }) {
     const [showModalAddCard, setShowModalAddCard] = useState(false);
@@ -11,9 +16,13 @@ function HomeSectionCard({ item }) {
     const [hovered, setHovered] = useState(false);
     const [addCartDone, setAddCartDone] = useState(true);
 
+    const dispatch = useDispatch()
+
+    const favoriteProduct = useSelector((state) => state?.product?.getAllFavoriteProduct?.currentAllProduct)
+
     useEffect(() => {
         setChooseVariant(item?.variants[0]); // Reset về biến thể mặc định
-    },[item])
+    }, [item]);
 
     const navigate = useNavigate();
 
@@ -24,26 +33,52 @@ function HomeSectionCard({ item }) {
         setChooseVariant();
     };
 
-    const handleNavigateDetailProduct =  () => {
-        navigate(`/product/${item?.name}`, {state: {productId: item?.productId}})
-    }
-    const handleClickFavoriteProduct = () => {
-        
-        
-    }
+    const handleNavigateDetailProduct = () => {
+        navigate(`/product/${item?.productId}-${item?.name}`);
+    };
+    const handleClickFavoriteProduct = async () => {
+        const accessToken = localStorage.getItem('token');
+        if (accessToken) {
+            const decodedToken = jwtDecode(accessToken);
+            if (decodedToken.exp * 1000 <= Date.now()) {
+                try {
+                    const response = refreshtoken(accessToken);
+                    const username = jwtDecode(response?.result?.token).sub;
+                    const message = await addProductToFavoritesProduct(username, item?.productId);
+                    await getAllProductsFavoriteByUsername(username,dispatch)
+                    toast.success(message);
+                } catch (error) {
+                    localStorage.removeItem('token');
+                    toast.error('Bạn cần đăng nhập để dùng được chức năng này!');
+                }
+            } else {
+                try {
+                    const username = decodedToken.sub;
+                    const message = await addProductToFavoritesProduct(username, item?.productId);
+                    await getAllProductsFavoriteByUsername(username,dispatch)
+                    toast.success(message);
+                } catch (error) {
+                    console.log(error);
+                    toast.error('Thêm sản phẩm vào danh sách thất bại thất bại');
+                }
+            }
+        } else {
+            toast.error('Bạn cần đăng nhập để dùng được chức năng này!');
+        }
+    };
 
     return (
         <div className="w-[246px] h-[490px] bg-white">
             {/* Image */}
-            <div 
+            <div
                 className="cursor-pointer h-[369px] relative overflow-hidden"
                 onMouseEnter={() => setHovered(true)}
                 onMouseLeave={() => setHovered(false)}
                 onClick={handleNavigateDetailProduct}
             >
                 <AnimatePresence mode="wait">
-                    <motion.img 
-                        key={hovered ? "hovered" : "default"}
+                    <motion.img
+                        key={hovered ? 'hovered' : 'default'}
                         className="h-full w-full object-cover absolute"
                         src={hovered ? chooseVariant?.imageUrl[1] : chooseVariant?.imageUrl[0]}
                         initial={{ opacity: 0 }}
@@ -72,7 +107,7 @@ function HomeSectionCard({ item }) {
                     </div>
                     {/* Favorite Product*/}
                     <div>
-                        <img onClick={handleClickFavoriteProduct} className="w-5 h-5 bg-white cursor-pointer" src={icons.iconFavorite} alt="" />
+                        <FavoriteIcon onClick={handleClickFavoriteProduct} className={`w-5 h-5 ${favoriteProduct?.some(product => product.productId === item.productId) ? " text-pink-500" : "text-slate-300"} cursor-pointer`}/>
                     </div>
                 </div>
                 <div className="font-sans font-light text-[18px] mb-2 truncate w-full">{item?.name}</div>
@@ -87,7 +122,7 @@ function HomeSectionCard({ item }) {
                         </span>
                         <div className="h-[1px] w-full bg-black opacity-40 absolute z-5 top-1/2"></div>
                     </div>
-                     {/* Add cart */}
+                    {/* Add cart */}
                     <div className="relative">
                         <img
                             onClick={toggleShowModalAddCard}
@@ -95,9 +130,14 @@ function HomeSectionCard({ item }) {
                             src={icons.iconAddCart}
                             alt=""
                         />
-                       
+
                         {showModalAddCard && (
-                            <ModalAddCart showModalAddCard={showModalAddCard} chooseVariant={chooseVariant} productId={item.productId} toggleShowModalAddCard={toggleShowModalAddCard}/>
+                            <ModalAddCart
+                                showModalAddCard={showModalAddCard}
+                                chooseVariant={chooseVariant}
+                                productId={item.productId}
+                                toggleShowModalAddCard={toggleShowModalAddCard}
+                            />
                         )}
                     </div>
                 </div>

@@ -27,6 +27,12 @@ const productSlice = createSlice({
       error: false,
       success: false,
     },
+    getAllFavoriteProduct: {
+      isFetching: false,
+      currentAllProduct: null,
+      error: false,
+      success: false,
+    },
   },
   reducers: {
     addProductStart: (state) => {
@@ -85,6 +91,21 @@ const productSlice = createSlice({
       state.getAllImageProduct.error = true;
       state.getAllImageProduct.success = false;
     },
+    //Product favorites
+    getAllProductFavoriteStart: (state) => {
+      state.getAllFavoriteProduct.isFetching = true;
+    },
+    getAllProductFavoriteSuccess: (state, action) => {
+      state.getAllFavoriteProduct.isFetching = false;
+      state.getAllFavoriteProduct.error = false;
+      state.getAllFavoriteProduct.success = true;
+      state.getAllFavoriteProduct.currentAllProduct = action.payload;
+    },
+    getAllProductFavoriteFailed: (state) => {
+      state.getAllFavoriteProduct.isFetching = false;
+      state.getAllFavoriteProduct.error = true;
+      state.getAllFavoriteProduct.success = false;
+    },
   },
 });
 
@@ -100,7 +121,10 @@ export const {
   getImageProductSuccess,
   getAllImageProductFailed,
   getAllImageProductStart,
-  getAllImageProductSuccess
+  getAllImageProductSuccess,
+  getAllProductFavoriteFailed,
+  getAllProductFavoriteStart,
+  getAllProductFavoriteSuccess
 } = productSlice.actions;
 
 export default productSlice.reducer;

@@ -44,6 +44,8 @@ import {
     getAllImageProductStart,
     getAllImageProductSuccess,
     getAllImageProductFailed,
+    getAllProductFavoriteStart,
+    getAllProductFavoriteSuccess,
 } from './productSlice';
 import { config } from 'react-transition-group';
 import { addProductToCartFailed, addProductToCartStart, addProductToCartSuccess } from './cartSlice';
@@ -706,6 +708,23 @@ export const addProductToFavoritesProduct = async (username,productId) => {
             },
         };
         const res = await axiosInstance.post(`${REST_API_V1_URL}/favorite/add?username=${username}&productId=${productId}`,config)
+        return res.data.message
+    } catch (error) {
+        console.log(error)
+    }
+}
+//Get all favorites product by username
+export const getAllProductsFavoriteByUsername = async (username,dispatch) => {
+    dispatch(getAllProductFavoriteStart())
+    try {
+        const accessToken = localStorage.getItem('token');
+        const config = {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        };
+        const res = await axiosInstance.get(`${REST_API_V1_URL}/favorite/findAll/${username}`,config)
+        dispatch(getAllProductFavoriteSuccess(res.data.result))
     } catch (error) {
         console.log(error)
     }

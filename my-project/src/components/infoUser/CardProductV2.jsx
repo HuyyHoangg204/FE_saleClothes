@@ -69,7 +69,7 @@ function CardProductV2({ product }) {
     const sizes = ['S', 'M', 'L', 'XL', '2XL'];
 
     const handleNavigateDetailProduct = () => {
-        navigate(`/product/${product?.name}`, { state: { productId: product?.productId } });
+        navigate(`/product/${product?.productId }-${product?.name}`);
     };
     const handleSizeSelect = (size) => {
         setSelectedSize(size);

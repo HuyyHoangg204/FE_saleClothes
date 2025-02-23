@@ -17,18 +17,20 @@ import {
     addProductToCart,
     getProductFromCart,
     getProductFromCartRedis,
+    refreshToken,
+    addProductToFavoritesProduct, getAllProductsFavoriteByUsername
 } from '../../redux/apiRequest';
 import { toast } from 'react-toastify';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 function InfoProduct({ dataProduct }) {
     const [selectedImageIndex, setSelectedImageIndex] = useState(0); // Lưu chỉ số ảnh đã chọn
-    const [chooseVariant, setChooseVariant] = useState(null);
+    const [chooseVariant, setChooseVariant] = useState(dataProduct.variants[0]);
     const [dataColor, setDataColor] = useState(null);
     const [selectedColor, setSelectedColor] = useState(null);
     const [selectedSize, setSelectedSize] = useState(null);
     const [openModalSize, setOpenModalSize] = useState(false);
-    const [isFavorite, setIsFavorite] = useState(false);
+
     const [fade, setFade] = useState(false); // Trạng thái để điều khiển hiệu ứng fade
     const [showDescription, setShowDescription] = useState(false);
     const [showMaterial, setShowMaterial] = useState(false);
@@ -37,23 +39,31 @@ function InfoProduct({ dataProduct }) {
 
     const dispatch = useDispatch();
 
+    const favoriteProduct = useSelector((state) => state?.product?.getAllFavoriteProduct?.currentAllProduct);
+
     //Select variant first when component mount
     useEffect(() => {
         if (dataProduct && dataProduct.variants && dataProduct.variants.length > 0) {
             setChooseVariant(dataProduct.variants[0]);
             setLoading(false); // ✅ Khi có dữ liệu, tắt loading
+            const fetchColor = async () => {
+                try {
+                    const result = await getColorById(chooseVariant?.color_id);
+                    setDataColor(result?.result);
+                } catch (error) {
+                    console.error('Lỗi khi lấy màu:', error);
+                }
+            };
+            setSelectedColor(chooseVariant?.color_id);
+            fetchColor();
         }
     }, [dataProduct]);
 
     useEffect(() => {
-        console.log(selectedSize);
-    }, [selectedSize]);
-
-    useEffect(() => {
         const fetchColor = async () => {
             try {
-                const result = await getColorById(chooseVariant.color_id);
-                setDataColor(result.result);
+                const result = await getColorById(chooseVariant?.color_id);
+                setDataColor(result?.result);
             } catch (error) {
                 console.error('Lỗi khi lấy màu:', error);
             }
@@ -145,8 +155,37 @@ function InfoProduct({ dataProduct }) {
         setOpenModalSize(false);
     };
 
-    const handleClick = () => {
-        setIsFavorite(!isFavorite); // Đổi trạng thái khi click
+
+    //Handle favorite product
+    const handleClickFavoriteProduct = async () => {
+        const accessToken = localStorage.getItem('token');
+        if (accessToken) {
+            const decodedToken = jwtDecode(accessToken);
+            if (decodedToken.exp * 1000 <= Date.now()) {
+                try {
+                    const response = refreshToken(accessToken);
+                    const username = jwtDecode(response?.result?.token).sub;
+                    const message = await addProductToFavoritesProduct(username, dataProduct?.product_id);
+                    await getAllProductsFavoriteByUsername(username, dispatch);
+                    toast.success(message);
+                } catch (error) {
+                    localStorage.removeItem('token');
+                    toast.error('Bạn cần đăng nhập để dùng được chức năng này!');
+                }
+            } else {
+                try {
+                    const username = decodedToken.sub;
+                    const message = await addProductToFavoritesProduct(username, dataProduct?.product_id);
+                    await getAllProductsFavoriteByUsername(username, dispatch);
+                    toast.success(message);
+                } catch (error) {
+                    console.log(error);
+                    toast.error('Thêm sản phẩm vào danh sách thất bại thất bại');
+                }
+            }
+        } else {
+            toast.error('Bạn cần đăng nhập để dùng được chức năng này!');
+        }
     };
 
     const toggleShowDescription = () => {
@@ -328,11 +367,15 @@ function InfoProduct({ dataProduct }) {
                             MUA HÀNG
                         </button>
                         <div
-                            onClick={handleClick}
+                            onClick={handleClickFavoriteProduct}
                             className="h-[56px] flex justify-center items-center border border-black w-[60px] rounded-2xl cursor-pointer hover:bg-black hover:text-white"
                         >
                             {/* Nếu đã yêu thích, hiển thị icon đầy (FavoriteIcon) và màu hồng */}
-                            {isFavorite ? <FavoriteIcon className="text-pink-600" /> : <FavoriteBorderIcon />}
+                            {favoriteProduct?.some((product) => product.productId === dataProduct?.product_id) ? (
+                                <FavoriteIcon className="text-pink-600" />
+                            ) : (
+                                <FavoriteBorderIcon />
+                            )}
                         </div>
                     </div>
                     <span className="font-sans font-light underline text-[14px] cursor-pointer mt-4">

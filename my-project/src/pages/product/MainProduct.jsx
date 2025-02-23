@@ -6,13 +6,15 @@ import IntroduceWeb from '../../components/IntroduceWeb';
 import SectionCarouselWatchedProductr from './SectionCarouselWatchedProductr';
 import SectionCarouselRecommendProduct from './SectionCarouselRecommendProduct.jsx';
 import BreadCrumb from '../../components/BreadCrumb.jsx';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { getListProductByIds, getProductDetail } from '../../redux/apiRequest.js';
 
 function MainProduct() {
-    const location = useLocation();
-    const productId = location.state?.productId;
+    const { name } = useParams();
 
+    // Tách ID từ chuỗi "48-Áo vest Tweed Kose"
+    const productId = name?.split("-")[0]; // Lấy "48"
+    
     const [dataProduct, setDataProduct] = useState({});
     const [dataProductWatched, setDataProductWatched] = useState(null)
     const [loading, setLoading] = useState(true); // ✅ Thêm trạng thái loading
