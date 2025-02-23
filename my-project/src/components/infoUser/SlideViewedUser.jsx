@@ -1,6 +1,4 @@
 import { useEffect, useState, useRef } from 'react';
-import icon from '../../assets/icons/index.jsx';
-import { FaShoppingCart, FaHeart } from 'react-icons/fa';
 import { getListProductByIds } from '../../redux/apiRequest.js';
 import CardProductV2 from './CardProductV2.jsx';
 import AliceCarousel from 'react-alice-carousel';
@@ -41,6 +39,7 @@ function SlideViewedUser({ handleChange }) {
     };
 
     const items = data?.map((product) => <CardProductV2 product={product} />);
+    
 
     if (loading) {
         return (
@@ -77,7 +76,7 @@ function SlideViewedUser({ handleChange }) {
                         />
                     </div>
                 )}
-                {activeIndex !== items?.length - 5 && (
+                {activeIndex !== items?.length - 2 && (
                     <div className="z-1">
                         <img
                             onClick={nextActive}

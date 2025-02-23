@@ -3,13 +3,16 @@ import { FaShoppingCart, FaHeart } from 'react-icons/fa';
 import icons from '../../assets/icons';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { jwtDecode } from 'jwt-decode';
 import {
     addProductToCartRedis,
     addProductToCart,
     getProductFromCart,
     getProductFromCartRedis,
+    refreshToken,
+    addProductToFavoritesProduct,
+    getAllProductsFavoriteByUsername,
 } from '../../redux/apiRequest';
 
 function CardProductV2({ product }) {
@@ -21,6 +24,8 @@ function CardProductV2({ product }) {
     useEffect(() => {
         setChooseVariant(product.variants[0]);
     }, [product]);
+
+    const favoriteProduct = useSelector((state) => state?.product?.getAllFavoriteProduct?.currentAllProduct);
 
     //Handle add product to cart
     const handleAddCart = async () => {
@@ -65,11 +70,43 @@ function CardProductV2({ product }) {
             }
         }
     };
+    //Handle favorite product
+    const handleFavoriteProduct = async () => {
+        const accessToken = localStorage.getItem('token');
+        if (accessToken) {
+            const decodedToken = jwtDecode(accessToken);
+            if (decodedToken.exp * 1000 <= Date.now()) {
+                try {
+                    const response = refreshToken(accessToken);
+                    const username = jwtDecode(response?.result?.token).sub;
+                    const message = await addProductToFavoritesProduct(username, product?.productId);
+                    await getAllProductsFavoriteByUsername(username, dispatch);
+                    toast.success(message);
+                } catch (error) {
+                    localStorage.removeItem('token');
+                    toast.error('Bạn cần đăng nhập để dùng được chức năng này!');
+                }
+            } else {
+                try {
+                    const username = decodedToken.sub;
+                    const message = await addProductToFavoritesProduct(username, product?.productId);
+                    await getAllProductsFavoriteByUsername(username, dispatch);
+                    toast.success(message);
+                } catch (error) {
+                    console.log(error);
+                    toast.error('Thêm sản phẩm vào danh sách thất bại');
+                }
+            }
+        } else {
+            toast.error('Bạn cần đăng nhập để dùng được chức năng này!');
+        }
+    };
+
     // Danh sách các size
     const sizes = ['S', 'M', 'L', 'XL', '2XL'];
 
     const handleNavigateDetailProduct = () => {
-        navigate(`/product/${product?.productId }-${product?.name}`);
+        navigate(`/product/${product?.productId}-${product?.name}`);
     };
     const handleSizeSelect = (size) => {
         setSelectedSize(size);
@@ -78,9 +115,7 @@ function CardProductV2({ product }) {
     const handleSelectColor = (variant) => {
         setChooseVariant(variant);
     };
-    useEffect(() => {
-        console.log(chooseVariant?.imageUrl[0]);
-    }, []);
+
     return (
         <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
             <div className="relative">
@@ -90,7 +125,14 @@ function CardProductV2({ product }) {
                     className="w-full h-56 object-cover rounded-md cursor-pointer"
                     onClick={handleNavigateDetailProduct}
                 />
-                <button className="absolute top-2 right-2 text-gray-700 hover:text-red-500">
+                <button
+                    onClick={handleFavoriteProduct}
+                    className={`absolute top-2 right-2 ${
+                        favoriteProduct?.some((item) => item.productId === product.productId)
+                            ? 'text-red-500'
+                            : 'text-gray-700'
+                    }  hover:text-red-500`}
+                >
                     <FaHeart />
                 </button>
             </div>
