@@ -33,9 +33,7 @@ function SalePages() {
     const handleChangeDataFilter = (data) => {
         setDataFilter(data);
     };
-    useEffect(() => {
-        console.log(dataFilter);
-    }, [dataFilter]);
+
 
     const categoryList = categories[gender] || [];
     // Tìm danh mục theo slug

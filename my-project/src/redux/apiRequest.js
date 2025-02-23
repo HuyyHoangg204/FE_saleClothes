@@ -695,3 +695,18 @@ export const deleteProductInCartAfterlogin = async (username,productId, color, s
         console.log(error)
     }
 }
+
+//Add product to favorites product
+export const addProductToFavoritesProduct = async (username,productId) => {
+    try {
+        const accessToken = localStorage.getItem('token');
+        const config = {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        };
+        const res = await axiosInstance.post(`${REST_API_V1_URL}/favorite/add?username=${username}&productId=${productId}`,config)
+    } catch (error) {
+        console.log(error)
+    }
+}

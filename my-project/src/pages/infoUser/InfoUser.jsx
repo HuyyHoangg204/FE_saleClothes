@@ -34,10 +34,7 @@ function InfoUser({ breadcrumb }) {
         fetchData()
     },[])
 
-    useEffect(() => {
-        console.log(user);
-        
-    },[user])
+
 
 
     // Hàm để xử lý việc hiển thị các trang khác nhau

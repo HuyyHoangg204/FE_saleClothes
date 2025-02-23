@@ -21,8 +21,7 @@ function MainProduct() {
             try {
                 const res = await getProductDetail(productId)
                 const res1 = await getListProductByIds();
-                console.log(res1);
-                
+
                 setDataProduct(res);
                 setDataProductWatched(res1);
                 saveProductIdToCookie(res.product_id);

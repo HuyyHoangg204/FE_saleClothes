@@ -27,9 +27,14 @@ function HomeSectionCard({ item }) {
     const handleNavigateDetailProduct =  () => {
         navigate(`/product/${item?.name}`, {state: {productId: item?.productId}})
     }
+    const handleClickFavoriteProduct = () => {
+        
+        
+    }
 
     return (
         <div className="w-[246px] h-[490px] bg-white">
+            {/* Image */}
             <div 
                 className="cursor-pointer h-[369px] relative overflow-hidden"
                 onMouseEnter={() => setHovered(true)}
@@ -48,6 +53,7 @@ function HomeSectionCard({ item }) {
                     />
                 </AnimatePresence>
             </div>
+            {/* Color */}
             <div className="">
                 <div className="flex justify-between mt-5">
                     <div className="flex space-x-2">
@@ -64,8 +70,9 @@ function HomeSectionCard({ item }) {
                             </div>
                         ))}
                     </div>
+                    {/* Favorite Product*/}
                     <div>
-                        <img className="w-5 h-5 bg-white" src={icons.iconFavorite} alt="" />
+                        <img onClick={handleClickFavoriteProduct} className="w-5 h-5 bg-white cursor-pointer" src={icons.iconFavorite} alt="" />
                     </div>
                 </div>
                 <div className="font-sans font-light text-[18px] mb-2 truncate w-full">{item?.name}</div>
@@ -80,6 +87,7 @@ function HomeSectionCard({ item }) {
                         </span>
                         <div className="h-[1px] w-full bg-black opacity-40 absolute z-5 top-1/2"></div>
                     </div>
+                     {/* Add cart */}
                     <div className="relative">
                         <img
                             onClick={toggleShowModalAddCard}
@@ -87,6 +95,7 @@ function HomeSectionCard({ item }) {
                             src={icons.iconAddCart}
                             alt=""
                         />
+                       
                         {showModalAddCard && (
                             <ModalAddCart showModalAddCard={showModalAddCard} chooseVariant={chooseVariant} productId={item.productId} toggleShowModalAddCard={toggleShowModalAddCard}/>
                         )}
