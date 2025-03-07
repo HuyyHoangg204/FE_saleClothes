@@ -2,9 +2,13 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import { toast } from 'react-toastify';
-import {addAddress} from "~/redux/apiRequest.js"
+import { addAddress } from '~/redux/apiRequest.js';
 import { useNavigate } from 'react-router-dom';
-function AddressModal({ isOpen, onClose ,refreshData}) {
+import { useSelector } from 'react-redux';
+import { updateAddress } from '../../redux/apiRequest';
+
+function UpdateAddressModal({ closeUpdateModal, idAddress, refreshData }) {
+    const [addressUpdate, setAddressUpdate] = useState({});
     const [provinces, setProvinces] = useState([]);
     const [districts, setDistricts] = useState([]);
     const [villages, setVillages] = useState([]);
@@ -15,25 +19,32 @@ function AddressModal({ isOpen, onClose ,refreshData}) {
     const [phoneNumber, setPhoneNumber] = useState('');
     const [detailAddress, setDetailAddress] = useState('');
     const [typeAddress, setTypeAddress] = useState(true);
-    const [province, setProvince] = useState('');
+    const [province, setProvince] = useState({});
     const [district, setDistrict] = useState('');
     const [village, setVillage] = useState('');
 
-    const navigate = useNavigate()
+    const data = useSelector((state) => state?.user?.address?.allAddress);
+
+    const navigate = useNavigate();
     //Call api get address
     useEffect(() => {
-        resetData();
+        // resetData();
         const fetchData = async () => {
-            const res = await axios.get('https://provinces.open-api.vn/api/p');
+            const res = await axios.get('https://provinces.open-api.vn/api/p'); // Get provinces
             setProvinces(res.data);
         };
         fetchData();
+
+        const foundAddress = data?.find((address) => address.id === idAddress); // Dùng find() thay vì filter()
+        if (foundAddress) {
+            setAddressUpdate(foundAddress);
+        }
     }, []);
 
     useEffect(() => {
         if (provinceSelected != null) {
             const fetchData = async () => {
-                const res = await axios.get(`https://provinces.open-api.vn/api/p/${provinceSelected}?depth=2`);
+                const res = await axios.get(`https://provinces.open-api.vn/api/p/${provinceSelected}?depth=2`); //Get district
                 setDistricts(res.data.districts);
             };
             fetchData();
@@ -43,154 +54,174 @@ function AddressModal({ isOpen, onClose ,refreshData}) {
     useEffect(() => {
         if (districtSelected != null) {
             const fetchData = async () => {
-                const res = await axios.get(`https://provinces.open-api.vn/api/d/${districtSelected}?depth=2`);
+                const res = await axios.get(`https://provinces.open-api.vn/api/d/${districtSelected}?depth=2`); // Get village
                 setVillages(res.data.wards);
             };
             fetchData();
         }
     }, [districtSelected]);
 
-    //Handle Add address
-    const handleClickAddAddress = async () => {
-        const accessToken = localStorage.getItem('token');
-        const dataProvince = provinces.filter((item) => item.code == provinceSelected);
-        const dataDistrict = districts.filter((item) => item.code == districtSelected);
-        const dataVillage = villages.filter((item) => item.code == villageSelected);
-       
-       
+    // Update data for input and select
+    useEffect(() => {
+        setFullName(addressUpdate?.fullName || ''); // Cập nhật fullName khi addressUpdate thay đổi
+        setPhoneNumber(addressUpdate?.phoneNumber || '');
+        setDetailAddress(addressUpdate?.detailAddress || '');
+    }, [addressUpdate]);
 
-        if (accessToken) {
-            const decodedToken = jwtDecode(accessToken);
-            if (decodedToken.exp * 1000 <= Date.now()) {
+    //Handle data province
+    useEffect(() => {
+        if (addressUpdate?.province && provinces?.length > 0) {
+            const matchedProvince = provinces.find((p) => p.name === addressUpdate.province);
+            setProvince(matchedProvince || {}); // Nếu không tìm thấy thì set {}
+        }
+    }, [addressUpdate, provinces]); // Thêm provinces vào dependencies
+    //Handle data district
+    useEffect(() => {
+        if (province?.code) {
+            const fetchDistricts = async () => {
                 try {
-                    const response = refreshtoken(accessToken);
-                    const username = jwtDecode(response?.result?.token).sub;
-                    const newAddress = {
-                        fullName: fullName,
-                        phoneNumber: phoneNumber,
-                        detailAddress: detailAddress,
-                        typeAddress: typeAddress,
-                        province: dataProvince ? dataProvince[0].name : '',
-                        district: dataDistrict ? dataDistrict[0].name : '',
-                        village: dataVillage ? dataVillage[0].name : '',
-                        userName: username
-                    };
-                    if(validateAddress(newAddress)) {
-                        await addAddress(newAddress);
-                        refreshData()
-                        onClose()
-                    }
+                    const res = await axios.get(`https://provinces.open-api.vn/api/p/${province?.code}?depth=2`); //Get district
+                    setDistricts(res.data.districts);
                 } catch (error) {
-                    localStorage.removeItem('token');
-                    toast.error('Vui lòng đăng nhập lại!');
-                    navigate('/login');
+                    console.error('Lỗi khi lấy danh sách quận/huyện:', error);
                 }
-            } else {
+            };
+            fetchDistricts();
+        }
+    }, [province]);
+
+    useEffect(() => {
+        if (addressUpdate?.district && districts?.length > 0) {
+            const matchedDistrict = districts.find((d) => d.name === addressUpdate.district);
+            setDistrict(matchedDistrict || {}); // Nếu không tìm thấy thì set {}
+        }
+    }, [addressUpdate, districts]); // Thêm provinces vào dependencies
+
+    //Handle data village
+    useEffect(() => {
+        if (district?.code) {
+            const fetchVillages = async () => {
                 try {
-                    const username = decodedToken.sub;
-                    const newAddress = {
-                        fullName: fullName,
-                        phoneNumber: phoneNumber,
-                        detailAddress: detailAddress,
-                        typeAddress: typeAddress,
-                        province: dataProvince ? dataProvince[0].name : '',
-                        district: dataDistrict ? dataDistrict[0].name : '',
-                        village: dataVillage ? dataVillage[0].name : '',
-                        userName: username
-                    };
-                    if(validateAddress(newAddress)) {
-                        await addAddress(newAddress);
-                        refreshData()
-                        onClose()
-                    }
+                    const res = await axios.get(`https://provinces.open-api.vn/api/d/${district.code}?depth=2`); // Get village
+                    setVillages(res.data.wards);
                 } catch (error) {
-                    console.log(error);
-                    onClose()
+                    console.error('Lỗi khi lấy danh sách Phường/Xã:', error);
                 }
-            }
-        } else {
-            navigate('/login')
+            };
+            fetchVillages();
+        }
+    }, [district]);
+    useEffect(() => {
+        if (addressUpdate?.village && villages?.length > 0) {
+            const matchedVillage = villages.find((v) => v.name === addressUpdate.village);
+            setVillage(matchedVillage || {}); // Nếu không tìm thấy thì set {}
+        }
+    }, [addressUpdate, villages]); // Thêm provinces vào dependencies
+
+    // Handle click update address
+    const handleClickUpdateAddress = async () => {
+        const token = localStorage.getItem('token');
+        const username = jwtDecode(token).sub;
+        const newAddress = {
+            fullName: fullName,
+            phoneNumber: phoneNumber,
+            province: province.name,
+            district: district.name,
+            village: village.name,
+            detailAddress: detailAddress,
+            typeAddress: typeAddress,
+            userName: username,
+        };
+        if(validateAddress(newAddress)) {
+           await updateAddress(newAddress, idAddress)
+           closeUpdateModal()
+           refreshData()
         }
     };
 
     //Validate address
-    const validateAddress = (address) => {
-        let checked = true;
+        const validateAddress = (address) => {
+            let checked = true;
+    
+            // Kiểm tra Họ tên
+            if (!address.fullName.trim()) {
+                checked = false;
+                toast.error('Họ tên không được để trống!');
+            } else if (address.fullName.length < 2 || address.fullName.length > 50) {
+                checked = false;
+                toast.error('Tên phải từ 2 đến 50 ký tự!');
+            }
+    
+            // Kiểm tra Số điện thoại
+            const phoneRegex = /^(0[1-9])[0-9]{8,9}$/;
+            if (!address.phoneNumber.trim()) {
+                checked = false;
+    
+                toast.error('Số điện thoại không được để trống!');
+            } else if (!phoneRegex.test(address.phoneNumber)) {
+                checked = false;
+                toast.error('Số điện thoại không hợp lệ! (Bắt đầu bằng 0, có 10-11 số)');
+            }
+    
+            // Kiểm tra Tỉnh / Thành phố
+            if (!address.province) {
+                checked = false;
+    
+                toast.error('Vui lòng chọn tỉnh thành!!');
+            }
+    
+            // Kiểm tra Huyện / Quận
+            if (!address.district) {
+                checked = false;
+    
+                toast.error('Vui lòng chọn 1 huyện!');
+            }
+    
+            // Kiểm tra Phường / Xã
+            if (!address.village) {
+                checked = false;
+    
+                toast.error('Vui lòng chọn 1 xã!');
+            }
+    
+            return checked;
+        };
 
-        // Kiểm tra Họ tên
-        if (!address.fullName.trim()) {
-            checked = false;
-            toast.error('Họ tên không được để trống!');
-        } else if (address.fullName.length < 2 || address.fullName.length > 50) {
-            checked = false;
-            toast.error('Tên phải từ 2 đến 50 ký tự!');
-        }
-
-        // Kiểm tra Số điện thoại
-        const phoneRegex = /^(0[1-9])[0-9]{8,9}$/;
-        if (!address.phoneNumber.trim()) {
-            checked = false;
-
-            toast.error('Số điện thoại không được để trống!');
-        } else if (!phoneRegex.test(address.phoneNumber)) {
-            checked = false;
-            toast.error('Số điện thoại không hợp lệ! (Bắt đầu bằng 0, có 10-11 số)');
-        }
-
-        // Kiểm tra Tỉnh / Thành phố
-        if (!address.province) {
-            checked = false;
-
-            toast.error('Vui lòng chọn tỉnh thành!!');
-        }
-
-        // Kiểm tra Huyện / Quận
-        if (!address.district) {
-            checked = false;
-
-            toast.error('Vui lòng chọn 1 huyện!');
-        }
-
-        // Kiểm tra Phường / Xã
-        if (!address.village) {
-            checked = false;
-
-            toast.error('Vui lòng chọn 1 xã!');
-        }
-
-        return checked;
-    };
-    //Function reset data
-    const resetData = () => {
-        setFullName('');
-        setPhoneNumber('');
-        setProvinceSelected(null);
-        setTypeAddress(true);
-        setProvinceSelected(null);
-        setDistrictSelected(null);
-        setVillageSelected(null);
-        setDetailAddress('');
-        setProvince('');
-        setDistrict('');
-        setVillage('');
-    };
-
+    // Func handle change data
     const handleChangeSelectProvince = (e) => {
+        const selectedCode = Number(e.target.value); // 🔥 Chuyển thành số
+
         setProvinceSelected(e.target.value);
+
+        const tempProvince = provinces.find((p) => p.code === selectedCode);
+
+        setProvince(tempProvince);
         // Reset lại quận/huyện & phường/xã
         setDistricts([]);
         setVillages([]);
         setDistrictSelected('');
         setVillageSelected('');
+        setDistrict({})
+        setVillage({})
     };
     const handleChangeSelectDistrict = (e) => {
+        const selectedCode = Number(e.target.value); // 🔥 Chuyển thành số
         setDistrictSelected(e.target.value);
+
+        const tempDistrict = districts.find((d) => d.code === selectedCode)
+        setDistrict(tempDistrict);
         // Reset lại phường/xã
         setVillages([]);
         setVillageSelected('');
+        setVillage({})
     };
     const handleChangeSelectVillage = (e) => {
+   
+        const selectedCode = Number(e.target.value); // 🔥 Chuyển thành số
         setVillageSelected(e.target.value);
+
+        const tempVillage = villages.find((v) => v.code === selectedCode)
+        setVillage(tempVillage);
     };
 
     const handleChangeFullName = (e) => {
@@ -202,13 +233,12 @@ function AddressModal({ isOpen, onClose ,refreshData}) {
     const handleDetailAddress = (e) => {
         setDetailAddress(e.target.value);
     };
-    if (!isOpen) return null;
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
             <div className="bg-white px-8 py-4 rounded-md w-[550px]">
                 <div className="flex justify-between items-center mb-6">
                     <h2 className="text-xl font-semibold">Thêm địa chỉ mới</h2>
-                    <button onClick={onClose} className="text-gray-700 text-[35px] hover:text-gray-500">
+                    <button onClick={closeUpdateModal} className="text-gray-700 text-[35px] hover:text-gray-500">
                         &times;
                     </button>
                 </div>
@@ -217,6 +247,7 @@ function AddressModal({ isOpen, onClose ,refreshData}) {
                     <div className="flex gap-4">
                         {/* Full Name */}
                         <input
+                            value={fullName}
                             onChange={handleChangeFullName}
                             type="text"
                             placeholder="Họ tên"
@@ -225,6 +256,7 @@ function AddressModal({ isOpen, onClose ,refreshData}) {
                         {/* Phone number */}
                         <input
                             onChange={handleChangePhoneNumber}
+                            value={phoneNumber}
                             type="text"
                             placeholder="Số điện thoại"
                             className="w-1/2 p-2 border border-gray-300 rounded"
@@ -234,7 +266,7 @@ function AddressModal({ isOpen, onClose ,refreshData}) {
                     <select
                         onChange={handleChangeSelectProvince}
                         className="w-full p-2 border border-gray-300 rounded"
-                        defaultValue=""
+                        value={province.code}
                     >
                         <option value="">Chọn Tỉnh / Thành phố</option>
                         {provinces?.map((province, index) => (
@@ -247,7 +279,7 @@ function AddressModal({ isOpen, onClose ,refreshData}) {
                     <select
                         onChange={handleChangeSelectDistrict}
                         className="w-full p-2 border border-gray-300 rounded"
-                        defaultValue=""
+                        value={district.code}
                     >
                         <option value="">Chọn Quận / Huyện</option>
                         {districts?.map((district, index) => (
@@ -259,8 +291,8 @@ function AddressModal({ isOpen, onClose ,refreshData}) {
                     {/* Village */}
                     <select
                         onChange={handleChangeSelectVillage}
+                        value={village.code}
                         className="w-full p-2 border border-gray-300 rounded"
-                        defaultValue=""
                     >
                         <option value="">Chọn Phường / Xã</option>
                         {villages?.map((village, index) => (
@@ -272,6 +304,7 @@ function AddressModal({ isOpen, onClose ,refreshData}) {
 
                     {/* Detail address */}
                     <input
+                        value={detailAddress}
                         onChange={handleDetailAddress}
                         type="text"
                         placeholder="Địa chỉ chi tiết"
@@ -312,10 +345,10 @@ function AddressModal({ isOpen, onClose ,refreshData}) {
                     </div>
 
                     <button
-                        onClick={handleClickAddAddress}
+                        onClick={handleClickUpdateAddress}
                         className="w-full p-3 mt-4 bg-black text-white rounded-lg font-semibold hover:bg-gray-800"
                     >
-                        Lưu địa chỉ
+                        Cập nhật địa chỉ
                     </button>
                 </div>
             </div>
@@ -323,4 +356,4 @@ function AddressModal({ isOpen, onClose ,refreshData}) {
     );
 }
 
-export default AddressModal;
+export default UpdateAddressModal;

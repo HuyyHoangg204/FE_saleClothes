@@ -12,6 +12,9 @@ import {
 } from './authSlice';
 import {
     deleteUserStart,
+    getAddressFailed,
+    getAddressStart,
+    getAddressSuccess,
     getUserFailed,
     getUsersFailed,
     getUsersStart,
@@ -727,5 +730,72 @@ export const getAllProductsFavoriteByUsername = async (username,dispatch) => {
         dispatch(getAllProductFavoriteSuccess(res.data.result))
     } catch (error) {
         console.log(error)
+    }
+}
+
+// Add new a address 
+export const addAddress = async (address) => {
+    try {
+        const accessToken = localStorage.getItem('token');
+        const config = {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        };
+        const res = await axiosInstance.post(`${REST_API_V1_URL}/address/add`,address, config)
+        toast.success("Thêm địa chỉ thành công ")
+    } catch (error) {
+        console.log(error)
+        toast.error('Thêm địa chỉ thất bại');
+    }
+}
+
+// Get all addresses by username
+export const getAllAddressByUsername = async (username,dispatch) => {
+    dispatch(getAddressStart())
+    try {
+        const accessToken = localStorage.getItem('token');
+        const config = {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        };
+        const res = await axiosInstance.get(`${REST_API_V1_URL}/address/${username}`,config)
+        dispatch(getAddressSuccess(res.data.result))
+    } catch (error) {
+        console.log(error)
+        dispatch(getAddressFailed())
+    }
+}
+
+//Delete the address
+export const deleteAddress = async (username, idAddress) => {
+    try {
+        const accessToken = localStorage.getItem('token');
+        const config = {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        };
+        const res = await axiosInstance.delete(`${REST_API_V1_URL}/address/delete?username=${username}&id=${idAddress}`,config)
+    } catch (error) {
+        console.log(error)
+    }
+}
+//Update the address
+
+export const updateAddress = async (address, idAddress) => {
+    try {
+        const accessToken = localStorage.getItem('token');
+        const config = {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        };
+        const res = await axiosInstance.put(`${REST_API_V1_URL}/address/update/${idAddress}`,address, config)
+        toast.success("Cập nhật địa chỉ thành công ")
+    } catch (error) {
+        console.log(error)
+        toast.error('Cập nhật địa chỉ thất bại');
     }
 }
