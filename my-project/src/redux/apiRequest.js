@@ -703,6 +703,22 @@ export const deleteProductInCartAfterlogin = async (username,productId, color, s
         console.log(error)
     }
 }
+//Get total price in cart
+export const getTotalPriceInCart = async () => {
+    try {
+        const accessToken = localStorage.getItem('token');
+        const decodedToken = jwtDecode(accessToken)
+        const config = {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        };
+        const res = await axiosInstance.get(`${REST_API_V1_URL}/priceCart/${decodedToken.sub}`,config)
+        return res.data.result
+    } catch (error) {
+        console.log(error)
+    }
+}
 
 //Add product to favorites product
 export const addProductToFavoritesProduct = async (username,productId) => {

@@ -28,7 +28,7 @@ function Cart({ toggleHideCart }) {
             return;
         }
 
-        const quantity = Object.values(productFromCart.result).reduce((acc, value) => acc + value, 0);
+        const quantity = Object.values(productFromCart?.result).reduce((acc, value) => acc + value, 0);
         setQuantityProduct(quantity);
         setItem(Object.entries(productFromCart.result));
     }, [productFromCart]);

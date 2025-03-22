@@ -4,8 +4,9 @@ import { jwtDecode } from 'jwt-decode';
 import { toast } from 'react-toastify';
 import { addAddress } from '~/redux/apiRequest.js';
 import { useNavigate } from 'react-router-dom';
-import { refreshToken } from '../../redux/apiRequest';
-function AddressModal({ isOpen, onClose, refreshData }) {
+
+function AddressInformation({ handleGetDataAddress }) {
+    const [typeAddress, setTypeAddress] = useState(true);
     const [provinces, setProvinces] = useState([]);
     const [districts, setDistricts] = useState([]);
     const [villages, setVillages] = useState([]);
@@ -15,22 +16,23 @@ function AddressModal({ isOpen, onClose, refreshData }) {
     const [fullName, setFullName] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [detailAddress, setDetailAddress] = useState('');
-    const [typeAddress, setTypeAddress] = useState(true);
+
     const [province, setProvince] = useState('');
     const [district, setDistrict] = useState('');
     const [village, setVillage] = useState('');
 
-    const navigate = useNavigate();
     //Call api get address
+    // Get provinces
     useEffect(() => {
         resetData();
+        handleGetDataAddress({});
         const fetchData = async () => {
             const res = await axios.get('https://provinces.open-api.vn/api/p');
             setProvinces(res.data);
         };
         fetchData();
     }, []);
-
+    //Get Districts
     useEffect(() => {
         if (provinceSelected != null) {
             const fetchData = async () => {
@@ -40,7 +42,7 @@ function AddressModal({ isOpen, onClose, refreshData }) {
             fetchData();
         }
     }, [provinceSelected]);
-
+    //Get Villages
     useEffect(() => {
         if (districtSelected != null) {
             const fetchData = async () => {
@@ -51,68 +53,54 @@ function AddressModal({ isOpen, onClose, refreshData }) {
         }
     }, [districtSelected]);
 
-    //Handle Add address
-    const handleClickAddAddress = async () => {
+    // Handle click add address
+    const handleAddAddress = async () => {
         const accessToken = localStorage.getItem('token');
-        const dataProvince = provinces.filter((item) => item.code == provinceSelected);
-        const dataDistrict = districts.filter((item) => item.code == districtSelected);
-        const dataVillage = villages.filter((item) => item.code == villageSelected);
+        const username = jwtDecode(accessToken).sub;
 
-        if (accessToken) {
-            const decodedToken = jwtDecode(accessToken);
-            if (decodedToken.exp * 1000 <= Date.now()) {
-                try {
-                    const response = refreshToken(accessToken);
-                    const username = jwtDecode(response?.result?.token).sub;
-                    const newAddress = {
-                        fullName: fullName,
-                        phoneNumber: phoneNumber,
-                        detailAddress: detailAddress,
-                        typeAddress: typeAddress,
-                        province: dataProvince ? dataProvince[0].name : '',
-                        district: dataDistrict ? dataDistrict[0].name : '',
-                        village: dataVillage ? dataVillage[0].name : '',
-                        userName: username,
-                    };
-                    if (validateAddress(newAddress)) {
-                        await addAddress(newAddress);
-                        refreshData();
-                        onClose();
-                    }
-                } catch (error) {
-                    localStorage.removeItem('token');
-                    toast.error('Vui lòng đăng nhập lại!');
-                    navigate('/login');
-                }
-            } else {
-                try {
-                    const username = decodedToken.sub;
-                    const newAddress = {
-                        fullName: fullName,
-                        phoneNumber: phoneNumber,
-                        detailAddress: detailAddress,
-                        typeAddress: typeAddress,
-                        province: dataProvince ? dataProvince[0].name : '',
-                        district: dataDistrict ? dataDistrict[0].name : '',
-                        village: dataVillage ? dataVillage[0].name : '',
-                        userName: username,
-                    };
-                    if (validateAddress(newAddress)) {
-                        await addAddress(newAddress);
-                        refreshData();
-                        onClose();
-                    }
-                } catch (error) {
-                    console.log(error);
-                    onClose();
-                }
-            }
-        } else {
-            navigate('/login');
+        // find data address
+        const dataProvince = provinces?.find((item) => item.code == provinceSelected);
+        const dataDistrict = districts?.find((item) => item.code == districtSelected);
+        const dataVillage = villages?.find((item) => item.code == villageSelected);
+        const newAddress = {
+            fullName,
+            phoneNumber,
+            detailAddress,
+            typeAddress,
+            province: dataProvince?.name || '',
+            district: dataDistrict?.name || '',
+            village: dataVillage?.name || '',
+            userName: username,
+        };
+
+        if (validateAddress(newAddress)) {
+            await addAddress(newAddress);
         }
     };
 
-    //Validate address
+    // Handle change data address when user enter information
+    useEffect(() => {
+        const accessToken = localStorage.getItem('token');
+        const username = jwtDecode(accessToken).sub;
+
+        // find data address
+        const dataProvince = provinces?.find((item) => item.code == provinceSelected);
+        const dataDistrict = districts?.find((item) => item.code == districtSelected);
+        const dataVillage = villages?.find((item) => item.code == villageSelected);
+        const newAddress = {
+            fullName,
+            phoneNumber,
+            detailAddress,
+            typeAddress,
+            province: dataProvince?.name || '',
+            district: dataDistrict?.name || '',
+            village: dataVillage?.name || '',
+            userName: username,
+        };
+        handleGetDataAddress(newAddress);
+    }, [fullName, phoneNumber, detailAddress, typeAddress, provinceSelected, districtSelected, villageSelected]);
+
+    //validate address information
     const validateAddress = (address) => {
         let checked = true;
 
@@ -163,7 +151,6 @@ function AddressModal({ isOpen, onClose, refreshData }) {
 
         return checked;
     };
-    //Function reset data
     const resetData = () => {
         setFullName('');
         setPhoneNumber('');
@@ -186,6 +173,7 @@ function AddressModal({ isOpen, onClose, refreshData }) {
         setDistrictSelected('');
         setVillageSelected('');
     };
+
     const handleChangeSelectDistrict = (e) => {
         setDistrictSelected(e.target.value);
         // Reset lại phường/xã
@@ -205,34 +193,38 @@ function AddressModal({ isOpen, onClose, refreshData }) {
     const handleDetailAddress = (e) => {
         setDetailAddress(e.target.value);
     };
-    if (!isOpen) return null;
     return (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-            <div className="bg-white px-8 py-4 rounded-md w-[550px]">
-                <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-xl font-semibold">Thêm địa chỉ mới</h2>
-                    <button onClick={onClose} className="text-gray-700 text-[35px] hover:text-gray-500">
-                        &times;
-                    </button>
+        <div className="space-y-6">
+            {/* form input */}
+            <form action="">
+                <div className="mb-[25px]">
+                    <label htmlFor="name" className="mb-[10px] text-base">
+                        Họ tên
+                    </label>
+                    <input
+                        onChange={handleChangeFullName}
+                        type="text"
+                        name="name"
+                        id="name"
+                        className="w-full h-[38px]"
+                    />
                 </div>
-
-                <div className="space-y-4">
-                    <div className="flex gap-4">
-                        {/* Full Name */}
-                        <input
-                            onChange={handleChangeFullName}
-                            type="text"
-                            placeholder="Họ tên"
-                            className="w-1/2 p-2 border border-gray-300 rounded"
-                        />
-                        {/* Phone number */}
-                        <input
-                            onChange={handleChangePhoneNumber}
-                            type="text"
-                            placeholder="Số điện thoại"
-                            className="w-1/2 p-2 border border-gray-300 rounded"
-                        />
-                    </div>
+                <div className="mb-[25px]">
+                    <label htmlFor="phoneNumber" className="mb-[10px] text-base">
+                        Số điện thoại
+                    </label>
+                    <input
+                        onChange={handleChangePhoneNumber}
+                        type="number"
+                        name="phoneNumber"
+                        id="phoneNumber"
+                        className="w-full h-[38px]"
+                    />
+                </div>
+                <div className="mb-[25px]">
+                    <label htmlFor="phoneNumber" className="mb-[10px] text-base">
+                        Tỉnh/thành phố
+                    </label>
                     {/* Province */}
                     <select
                         onChange={handleChangeSelectProvince}
@@ -246,6 +238,11 @@ function AddressModal({ isOpen, onClose, refreshData }) {
                             </option>
                         ))}
                     </select>
+                </div>
+                <div className="mb-[25px]">
+                    <label htmlFor="phoneNumber" className="mb-[10px] text-base">
+                        Quận/Huyện
+                    </label>
                     {/* District */}
                     <select
                         onChange={handleChangeSelectDistrict}
@@ -259,6 +256,11 @@ function AddressModal({ isOpen, onClose, refreshData }) {
                             </option>
                         ))}
                     </select>
+                </div>
+                <div className="mb-[25px]">
+                    <label htmlFor="phoneNumber" className="mb-[10px] text-base">
+                        Phường/Xã
+                    </label>
                     {/* Village */}
                     <select
                         onChange={handleChangeSelectVillage}
@@ -272,58 +274,62 @@ function AddressModal({ isOpen, onClose, refreshData }) {
                             </option>
                         ))}
                     </select>
+                </div>
 
-                    {/* Detail address */}
+                <div className="mb-[25px]">
+                    <label htmlFor="detailAdress" className="mb-[10px] text-base">
+                        Nhập địa chỉ
+                    </label>
                     <input
                         onChange={handleDetailAddress}
                         type="text"
-                        placeholder="Địa chỉ chi tiết"
-                        className="w-full p-2 border border-gray-300 rounded"
+                        name="detailAdress"
+                        id="detailAdress"
+                        className="w-full h-[38px]"
                     />
-
-                    <div className="flex gap-4">
-                        <label
-                            className={`flex-1 p-2 border rounded text-center cursor-pointer ${
-                                typeAddress === false ? 'bg-black text-white' : 'border-black'
-                            }`}
-                        >
-                            <input
-                                type="radio"
-                                name="addressType"
-                                value="company"
-                                className="hidden"
-                                checked={!typeAddress}
-                                onChange={() => setTypeAddress(false)}
-                            />
-                            Công ty
-                        </label>
-                        <label
-                            className={`flex-1 p-2 border rounded text-center cursor-pointer ${
-                                typeAddress ? 'bg-black text-white' : 'border-black'
-                            }`}
-                        >
-                            <input
-                                type="radio"
-                                name="addressType"
-                                value="home"
-                                className="hidden"
-                                checked={typeAddress}
-                                onChange={() => setTypeAddress(true)}
-                            />
-                            Nhà riêng
-                        </label>
-                    </div>
-
-                    <button
-                        onClick={handleClickAddAddress}
-                        className="w-full p-3 mt-4 bg-black text-white rounded-lg font-semibold hover:bg-gray-800"
-                    >
-                        Lưu địa chỉ
-                    </button>
                 </div>
+
+                <div className="flex gap-4">
+                    <label
+                        className={`flex-1 p-2 border rounded text-center cursor-pointer ${
+                            typeAddress === false ? 'bg-black text-white' : 'border-black'
+                        }`}
+                    >
+                        <input
+                            type="radio"
+                            name="addressType"
+                            value="company"
+                            className="hidden"
+                            checked={!typeAddress}
+                            onChange={() => setTypeAddress(false)}
+                        />
+                        Công ty
+                    </label>
+                    <label
+                        className={`flex-1 p-2 border rounded text-center cursor-pointer ${
+                            typeAddress ? 'bg-black text-white' : 'border-black'
+                        }`}
+                    >
+                        <input
+                            type="radio"
+                            name="addressType"
+                            value="home"
+                            className="hidden"
+                            checked={typeAddress}
+                            onChange={() => setTypeAddress(true)}
+                        />
+                        Nhà riêng
+                    </label>
+                </div>
+            </form>
+            <div
+                onClick={handleAddAddress}
+                className="border border-slate-400 text-center py-2 font-semibold text-[18px] cursor-pointer hover:bg-black hover:text-white"
+            >
+                Thêm vào sổ địa chỉ
             </div>
         </div>
     );
 }
 
-export default AddressModal;
+export default AddressInformation;
