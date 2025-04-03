@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
+import { BrowserRouter, createRoutesFromElements, Route, Routes, useLocation } from "react-router-dom";
 import "./App.css";
 import { useEffect } from "react";
 import Login from "~/pages/Login/Login.jsx";
@@ -13,6 +13,7 @@ import InfoUser from "./pages/infoUser/InfoUser.jsx";
 import MainProduct from "./pages/product/MainProduct.jsx";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import VoucherManagement from "./modal/Voucher/VoucherManagement.jsx";
 
 
 function App() {
@@ -23,16 +24,16 @@ function App() {
     window.scroll({ top: 0 });
     document.querySelector("html").style.scrollBehavior = "";
   }, [location.pathname]); // triggered on route change
-
   return (
     <div>
       <Routes>
-        <Route path="/login" element={<Login />} />
+        <Route path="/login" element={<Login />}/>
         <Route path="/register" element={<Register />} />
-        <Route path="/admin" element={<Dashboard />} />
+        <Route path="/admin" element={<Dashboard />}/>
         <Route path="/order" element={<Order />} />
         <Route path="/my-account" element={<InfoUser breadcrumb = {['TRANG CHỦ', 'THÔNG TIN CÁ NHÂN']}/>} />
         <Route path="/" element={<Home />} />
+        <Route path="/voucher" element={<VoucherManagement/>}/>
         <Route path="/product/:name" element={<MainProduct/>} />
         <Route path="/danh-muc/:gender/:categorySlug" element={<SalePages/>}/>
         <Route path= "/order" element= {<Order/>}/>

@@ -729,3 +729,22 @@ export const getAllProductsFavoriteByUsername = async (username,dispatch) => {
         console.log(error)
     }
 }
+
+// Voucher api start at here
+export const getAllVoucher = async () => {
+    try{
+        const accessToken = localStorage.getItem('token')
+        if(!accessToken){
+            throw new Error("Không tìm thấy token!")
+        }
+        const config = {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        }
+        const res = (await axiosInstance.get(`${REST_API_V1_URL}/khuyen-mai`, config))
+        return res.data
+    }catch(err){
+        console.log(err)
+    }
+}
