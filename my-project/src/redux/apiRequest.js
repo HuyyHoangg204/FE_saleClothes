@@ -736,6 +736,7 @@ export const getAllProductsFavoriteByUsername = async (username,dispatch) => {
     }
 }
 
+
 // Add new a address 
 export const addAddress = async (address) => {
     try {
@@ -813,3 +814,18 @@ export const getSuggestion = async (query) => {
         
     }
 }
+// Voucher api start at here
+export const getAllVoucher = async () => {
+    try{
+        const accessToken = localStorage.getItem('token')
+        if(!accessToken){
+            throw new Error("Không tìm thấy token!")
+        }
+        const res = (await axiosInstance.get(`${REST_API_V1_URL}/khuyen-mai`, config))
+        return res.data
+        }
+    catch(err){
+        console.log(err)
+    }
+}
+
