@@ -10,9 +10,11 @@ import '~/css/header.css';
 import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
 import { getAllProductsFavoriteByUsername, getProductFromCart, getProductFromCartRedis, refreshToken } from '../../redux/apiRequest';
+import Search from '../../layouts/Search';
 
 function MainHeader() {
     const [displayCart, setDisplayCart] = useState(false);
+    const [isSearch, setIsSearch] = useState(false)
     const [token, setToken] = useState('');
     const [quantityProduct, setQuantityProduct] = useState(0);
 
@@ -134,6 +136,10 @@ function MainHeader() {
             window.removeEventListener('resize', handleResize);
         };
     }, []);
+    //Close main search
+    const handleCloseMainSearch = () => {
+        setIsSearch(false)
+    }
     return (
         <Fragment>
             <header className="fixed top-0 z-10 w-full flex bg-white justify-between items-center  px-20 font-sans text-l border-b shadow">
@@ -186,8 +192,8 @@ function MainHeader() {
                     </div>
                 </div>
                 <div className="flex items-center justify-between space-x-16 ">
-                    <div className="flex items-center w-80 h-10 border rounded-3xl">
-                        <img className="w-7 h-6 mx-2" src={icons.iconSearch} alt="" />
+                    <div onClick={() => setIsSearch(true)} className="flex items-center w-80 h-10 border rounded-3xl">
+                        <img className="w-7 h-6 mx-2 cursor-pointer" src={icons.iconSearch} alt="" />
                         <input
                             type="text"
                             placeholder="TÌM KIẾM SẢN PHẨM"
@@ -208,6 +214,7 @@ function MainHeader() {
                 </div>
             </header>
             {displayCart && <Cart toggleHideCart={toggleHideCart} />}
+            {isSearch && <Search handleCloseMainSearch={handleCloseMainSearch}/>}
         </Fragment>
     );
 }

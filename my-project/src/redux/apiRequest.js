@@ -802,3 +802,14 @@ export const updateAddress = async (address, idAddress) => {
         toast.error('Cập nhật địa chỉ thất bại');
     }
 }
+// Get suggestion when user searching
+export const getSuggestion = async (query) => {
+    try {
+        
+        const res = await axiosInstance.get(`${REST_API_V1_URL}/suggestion?query=${query}`)
+        return res.data.result;
+    } catch (error) {
+        console.log(error)
+        
+    }
+}
