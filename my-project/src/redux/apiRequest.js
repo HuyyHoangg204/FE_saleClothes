@@ -829,3 +829,22 @@ export const getAllVoucher = async () => {
     }
 }
 
+//Get product by category 
+export const getListProductBySearchLetters = async (query, page, size, isSort, sizeClothes = '', colorID = 0, fromPrice = 0, toPrice = 0) => {
+    try {
+        // Tạo một đối tượng queryParams để chỉ bao gồm các tham số cần thiết
+        let queryParams = `?query=${encodeURIComponent(query)}&page=${page}&size=${size}&isSort=${isSort}`;
+
+        // Chỉ thêm tham số nếu chúng không phải là giá trị mặc định
+        if (sizeClothes)  queryParams += `&sizeClothes=${encodeURIComponent(sizeClothes)}`;
+        if (colorID)      queryParams += `&color=${colorID}`;
+        if (fromPrice)    queryParams += `&fromPrice=${fromPrice}`;
+        if (toPrice)      queryParams += `&toPrice=${toPrice}`;
+    
+        const res = await axiosInstance.get(`${REST_API_V1_URL}/search${queryParams}`);
+        return res.data.result;
+    } catch (error) {
+        console.log(error);
+        return [];
+    }
+}

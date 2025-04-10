@@ -14,6 +14,7 @@ import MainProduct from "./pages/product/MainProduct.jsx";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import VoucherManagement from "./modal/Voucher/VoucherManagement.jsx";
+import SearchProductPage from "./pages/SearchProductPage/SearchProductPage.jsx";
 
 
 function App() {
@@ -36,6 +37,7 @@ function App() {
         <Route path="/voucher" element={<VoucherManagement/>}/>
         <Route path="/product/:name" element={<MainProduct/>} />
         <Route path="/danh-muc/:gender/:categorySlug" element={<SalePages/>}/>
+        <Route path="/tim-kiem/:query" element={<SearchProductPage/>}/>
         <Route path= "/order" element= {<Order/>}/>
       </Routes>
       <ToastContainer position="top-right" autoClose={3000} />

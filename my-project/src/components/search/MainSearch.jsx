@@ -10,7 +10,7 @@ function MainSearch({ handleCloseMainSearch }) {
     const [showSuggestions, setShowSuggestions] = useState(false);
     const inputRef = useRef(null);
 
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
     useEffect(() => {
         inputRef.current?.focus(); // Focus vào input khi component mount
@@ -18,13 +18,11 @@ function MainSearch({ handleCloseMainSearch }) {
 
     // Handle show suggestions
     useEffect(() => {
-        console.log(query);
-
         const fetchSuggestions = async () => {
             if (query.length >= 1) {
                 try {
                     const res = await getSuggestion(query);
-                    console.log(res)
+                    console.log(res);
                     setSuggestions(res);
                     setShowSuggestions(true);
                 } catch (error) {
@@ -38,12 +36,23 @@ function MainSearch({ handleCloseMainSearch }) {
         const timeOutId = setTimeout(fetchSuggestions, 500);
         return () => clearTimeout(timeOutId);
     }, [query]);
-    // handle search product 
+    // handle click search product
     const handleClickSearchProduct = (id) => {
         console.log(id);
-        handleCloseMainSearch()
-        navigate(`/product/${id}`)
-    }
+        handleCloseMainSearch();
+        navigate(`/product/${id}`);
+    };
+    // handle enter search product
+    const handleEnterSearchProduct = (e) => {
+        if (e.key !== 'Enter') return;   // chỉ xử lý Enter
+        if (query.trim().length > 0) {
+          navigate(`/tim-kiem/${encodeURIComponent(query.trim())}`);
+          handleCloseMainSearch()
+        } else {
+          handleCloseMainSearch();
+        }
+      };
+      
     // handle change data search
     const handleChangeInputSearch = (e) => {
         setQuery(e.target.value);
@@ -60,6 +69,7 @@ function MainSearch({ handleCloseMainSearch }) {
                         type="text"
                         value={query}
                         onChange={handleChangeInputSearch}
+                        onKeyDown={handleEnterSearchProduct}
                         placeholder="TÌM KIẾM SẢN PHẨM"
                         className="w-full opacity-60 p-1 outline-none border-none focus:outline-none focus:ring-0 focus:border-none h-[40px]"
                     />
