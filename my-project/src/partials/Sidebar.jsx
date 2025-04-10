@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 
 import SidebarLinkGroup from "./SidebarLinkGroup";
+import VoucherManagement from "../modal/Voucher/VoucherManagement";
 
 function Sidebar({
   sidebarOpen,
@@ -19,6 +20,8 @@ function Sidebar({
   const [sidebarExpanded, setSidebarExpanded] = useState(
     storedSidebarExpanded === null ? false : storedSidebarExpanded === "true"
   );
+  
+  // select a page need to Active with fisrt-value is 'dashboard'
   const [activeItem, setActiveItem] = useState("dashboard");
 
   // close on click outside
@@ -347,15 +350,20 @@ function Sidebar({
                           <li className="mb-1 last:mb-0">
                             <NavLink
                               end
+                              to={"/admin"}
+                              onClick={() => {
+                                setActiveItem("voucher");
+                                setCurrentComponent("voucher");
+                              }} 
                               className={
                                 "block transition duration-150 truncate " +
-                                (activeItem ==="someone"
+                                (activeItem ==="voucher"
                                   ? "text-violet-500"
                                   : "text-gray-500/90 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200")
                               }
                             >
                               <span className="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
-                                Shop
+                                Voucher
                               </span>
                             </NavLink>
                           </li>

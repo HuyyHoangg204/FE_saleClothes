@@ -6,10 +6,10 @@ import Sidebar from "../partials/Sidebar";
 import Header from "../partials/Header";
 
 import Banner from "../partials/Banner";
-import Login from "./Login/Login";
-import { useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import DashboardMain from "../layouts/DashboardMain";
 import Product from "../layouts/Product";
+import VoucherManagement from "../modal/Voucher/VoucherManagement";
 
 function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -50,6 +50,8 @@ function Dashboard() {
     switch (currentComponent) {
       case "product":
         return <Product />;
+      case "voucher":
+        return <VoucherManagement/>
       default:
         return <DashboardMain/>
     }
@@ -73,9 +75,9 @@ function Dashboard() {
             <main className="grow">
               {renderComponent()} {/* Render component dựa trên state */}
             </main>
-
             <Banner />
           </div>
+          
         </div>
         
       {/* {role == "ADMIN" ? (
