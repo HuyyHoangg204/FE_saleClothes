@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import icon from '../../assets/icons/index.jsx';
 
 function DeliveryMethod({ handleGetDataDeliveryMethod }) {
-    const [selectedMethod, setSelectedMethod] = useState('fast');
+    const [selectedMethod, setSelectedMethod] = useState('FAST');
 
     useEffect(() => {
         handleGetDataDeliveryMethod(selectedMethod);
@@ -13,10 +13,10 @@ function DeliveryMethod({ handleGetDataDeliveryMethod }) {
         let today = new Date();
         let deliveryDate = new Date(today);
         switch (method) {
-            case 'express':
+            case 'EXPRESS':
                 deliveryDate.setDate(today.getDate() + 1);
                 break;
-            case 'fast':
+            case 'FAST':
                 deliveryDate.setDate(today.getDate() + 3);
                 break;
             default:
@@ -43,8 +43,8 @@ function DeliveryMethod({ handleGetDataDeliveryMethod }) {
             {/* Form chọn phương thức giao hàng */}
             <form className="flex">
                 {[
-                    { value: 'fast', label: 'Chuyển phát nhanh' },
-                    { value: 'express', label: 'Giao hàng hỏa tốc' },
+                    { value: 'FAST', label: 'Chuyển phát nhanh' },
+                    { value: 'EXPRESS', label: 'Giao hàng hỏa tốc' },
                 ].map((option) => (
                     <label key={option.value} className="inline-flex items-center ml-5 first:ml-0 cursor-pointer">
                         <input

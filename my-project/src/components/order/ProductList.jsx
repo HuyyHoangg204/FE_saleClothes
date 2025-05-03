@@ -1,15 +1,17 @@
-import { useEffect, useState,useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import icon from '../../assets/icons/index.jsx';
 import { useDispatch, useSelector } from 'react-redux';
 import ItemProduct from './ItemProduct.jsx';
 import { useNavigate } from 'react-router-dom';
 
-function ProductList({handleGetPriceMethod}) {
+function ProductList({ handleGetDataProductInCart }) {
     const productFromCart = useSelector((state) => state.cart?.getProductFromCart?.currentCart);
     const navigate = useNavigate();
     // Tính toán lại danh sách sản phẩm và tổng số lượng
     const items = useMemo(() => Object.entries(productFromCart?.result ?? {}), [productFromCart]);
     const quantityProduct = useMemo(() => items.reduce((acc, [, value]) => acc + value, 0), [items]);
+
+
     return (
         <div>
             <div className="bg-white w-full p-[19px] mb-[34px]">
@@ -26,7 +28,7 @@ function ProductList({handleGetPriceMethod}) {
 
                     {items?.map((item, index) => (
                         <div key={index}>
-                            <ItemProduct item={item} />
+                            <ItemProduct item={item} onLoaded={handleGetDataProductInCart}/>
                         </div>
                     ))}
                 </div>

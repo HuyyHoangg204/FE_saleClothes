@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import icon from '../../assets/icons/index.jsx';
 
 function PaymentMethod({ handleGetDataPaymentMethod }) {
-    const [selectedOption, setSelectedOption] = useState('delivery-by-cash');
+    const [selectedOption, setSelectedOption] = useState('COD');
 
     const handleChange = (event) => {
         setSelectedOption(event.target.value);
@@ -13,11 +13,11 @@ function PaymentMethod({ handleGetDataPaymentMethod }) {
     }, [selectedOption]);
 
     const paymentMethods = [
-        { value: 'delivery-by-cash', label: 'Thanh toán khi nhận hàng' },
-        { value: 'delivery-by-momo', label: 'Thanh toán bằng Momo' },
-        { value: 'delivery-by-atm', label: 'Thanh toán bằng ATM' },
-        { value: 'delivery-by-credit-card', label: 'Thanh toán bằng thẻ tín dụng' },
-        { value: 'delivery-by-vnpay', label: 'Thanh toán bằng ví VNPAY' },
+        { value: 'COD', label: 'Thanh toán khi nhận hàng' },
+        { value: 'E_WALLET', label: 'Thanh toán bằng Momo' },
+        { value: 'BANK_TRANSFER', label: 'Thanh toán bằng ATM' },
+        { value: 'CREDIT_CARD', label: 'Thanh toán bằng thẻ tín dụng' },
+        { value: 'VNPAY', label: 'Thanh toán bằng ví VNPAY' },
     ];
 
     return (

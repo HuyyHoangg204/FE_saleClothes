@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { getProductInCart } from '../../redux/apiRequest';
 
-function ItemProduct({ item }) {
+function ItemProduct({ item, onLoaded}) {
     const key = item[0].split('_');
+    const quantity1 = item[1];
 
     const [productData, setProductData] = useState({
         productName: '',
@@ -15,6 +16,16 @@ function ItemProduct({ item }) {
     useEffect(() => {
         const fetchData = async () => {
             const result = await getProductInCart(key[0], key[2]);
+            const variantId = result.result.variants.variant_id;
+            
+            
+            // Gửi dữ liệu về component cha
+            onLoaded?.({
+                quantity: quantity1,
+                productVariant: {
+                    variant_id: variantId,
+                },
+            });
 
             const price = result?.result.base_price;
             const quantity = item[1];

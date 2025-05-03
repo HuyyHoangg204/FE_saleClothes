@@ -1528,7 +1528,7 @@ function Product() {
                                                 index={index}
                                                 openAddImage={() => openAddImage(index)}
                                                 handleClickChooseColor={handleClickChooseColor}
-                                                colors={colors}
+                                                
                                             />
                                         </div>
                                     ))}

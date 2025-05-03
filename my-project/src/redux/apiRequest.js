@@ -53,11 +53,13 @@ import {
 import { config } from 'react-transition-group';
 import { addProductToCartFailed, addProductToCartStart, addProductToCartSuccess } from './cartSlice';
 
+
 //  const REST_AUTH_BASE_URL = "http://51.79.167.161:8081/auth";
 //  const REST_API_BASE_URL = "http://51.79.167.161:8081/api";
 const REST_AUTH_BASE_URL = import.meta.env.VITE_REST_AUTH_BASE_URL;
 const REST_API_BASE_URL = import.meta.env.VITE_REST_API_BASE_URL;
 const REST_API_V1_URL = import.meta.env.VITE_REST_API_V1_URL;
+
 
 //get cookie
 const getCookie = (name) => {
@@ -69,9 +71,7 @@ const getCookie = (name) => {
 export const loginUser = async (user, dispatch, navigate) => {
     dispatch(loginStart());
     try {
-        console.log(import.meta.env);
-        console.log(REST_AUTH_BASE_URL);
-        
+
         const guestCartId = localStorage.getItem("guestCartId");
         const res = await axios.post(REST_AUTH_BASE_URL + `/login?guestCartId=${guestCartId}`, user);
         dispatch(loginSuccess(res.data));
@@ -862,5 +862,22 @@ export const getListProductBySearchLetters = async (query, page, size, isSort, s
     } catch (error) {
         console.log(error);
         return [];
+    }
+}
+
+//Order
+export const handleOrder = async (data) => {
+    try{
+        const accessToken = localStorage.getItem('token')
+        if(!accessToken){
+            throw new Error("Không tìm thấy token!")
+        }
+        const res = (await axiosInstance.post(`${REST_API_V1_URL}/order`,data, config))
+        toast.success("Đặt hàng thành công!")
+        
+        }
+    catch(err){
+        console.log(err)
+       
     }
 }

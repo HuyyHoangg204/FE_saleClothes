@@ -5,23 +5,28 @@ import MainHeader from '../../partials/MainHeader/MainHeader.jsx';
 import Footer from '../../partials/Footer/Footer.jsx';
 import AddressInformation from '../../components/order/AddressInfomation.jsx';
 import AddressBook from '../../components/order/AddressBook.jsx';
-import { getAllAddressByUsername } from '../../redux/apiRequest.js';
+import { getAllAddressByUsername, handleOrder } from '../../redux/apiRequest.js';
 import { jwtDecode } from 'jwt-decode';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import DeliveryMethod from '../../components/order/DeliveryMethod.jsx';
 import { toast } from 'react-toastify';
 import PaymentMethod from '../../components/order/PaymentMethod.jsx';
 import ProductList from '../../components/order/ProductList.jsx';
 import OrderDetail from '../../components/order/OrderDetail.jsx';
+import { useNavigate } from 'react-router-dom';
 
 function Order() {
     const [selectedAddress, setSelectedAddress] = useState(true);
     const [deliveryMethod, setDeliveryMethod] = useState('');
     const [dataAddress, setDataAddress] = useState({});
     const [paymentMethod, setPaymentMethod] = useState('');
-    
+    const [shippingFee, setShippingFee] = useState(0);
+    const [totalAmount, setTotalAmount] = useState(0);
+    const [orderDetails, setOrderDetails] = useState([])
 
     const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const username = useSelector((state) => state.auth.username);
 
     useEffect(() => {
         resetAddress();
@@ -29,14 +34,53 @@ function Order() {
 
     //Handle feature order
     const handleFeatOrder = () => {
-        console.log(dataAddress);
-
         if (validateAddress(dataAddress)) {
-            console.log(dataAddress);
+            const newData = {
+                totalAmount: totalAmount,
+                paymentMethod: paymentMethod,
+                paymentStatus: 'UNPAID',
+                deliveryMethod: deliveryMethod,
+                shippingFee: shippingFee,
+                username: username,
+                addressId: dataAddress.id,
+                orderDetails: orderDetails,
+            };
+            
+            switch(paymentMethod) {
+                case "COD":
+                    handleApiCreateOrder(newData)
+                    //To do
+                    break;
+                case "BANK_TRANSFER":
+                    //To do
+                    break;
+                case "BANK_TRANSFER":
+                    //To do
+                    break;
+                case "E_WALLET":
+                    //To do
+                    break;
+                case "CREDIT_CARD":
+                    //To do
+                    break;
+                case "VNPAY":
+                    //To do
+                    break;
+                default: 
+                toast.error("Phương thức thanh toán không hợp lệ");
+            }
         }
-        console.log(deliveryMethod);
-        console.log(paymentMethod);
     };
+    //Handle call api create order
+    const handleApiCreateOrder = async(data) => {
+        try {
+            await handleOrder(data); // gọi API tạo đơn hàng
+            navigate('/thank-you'); // chuyển hướng sau khi thành công
+        } catch (error) {
+            toast.error('Đặt hàng thất bại. Vui lòng thử lại.');
+            console.error(error);
+        }
+    }
 
     //sync reset address
     const resetAddress = async () => {
@@ -64,7 +108,20 @@ function Order() {
     const handleGetDataPaymentMethod = (paymentMethod) => {
         setPaymentMethod(paymentMethod);
     };
- 
+    //handle get data payment method
+    const handleGetShippingFee = (data) => {
+        setShippingFee(data);
+    };
+    //handle get data payment method
+    const handleGetTotalAmount = (data) => {
+        setTotalAmount(data);
+    };
+
+      //handle get data payment method
+    const handleGetDataProductInCart = (data) => {
+        setOrderDetails((prev) => [...prev,data])
+        
+    };
 
     //validate address information
     const validateAddress = (address) => {
@@ -212,13 +269,17 @@ function Order() {
                         </div>
                         {/* Product list */}
                         <div>
-                            <ProductList/>
+                            <ProductList  handleGetDataProductInCart={handleGetDataProductInCart}/>
                         </div>
                     </div>
 
                     {/* right */}
                     <div className="w-[390px]">
-                       <OrderDetail handleFeatOrder={handleFeatOrder}/>
+                        <OrderDetail
+                            handleFeatOrder={handleFeatOrder}
+                            handleGetShippingFee={handleGetShippingFee}
+                            handleGetTotalAmount={handleGetTotalAmount}
+                        />
                     </div>
                 </div>
             </div>
