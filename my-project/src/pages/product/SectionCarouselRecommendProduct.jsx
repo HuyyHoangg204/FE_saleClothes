@@ -1,100 +1,101 @@
-import HomeSectionCard from "~/partials/HomeSectionCard/HomeSectionCard.jsx";
-import React, { useRef, useState, useEffect } from "react";
-import AliceCarousel from "react-alice-carousel";
-import "react-alice-carousel/lib/alice-carousel.css";
-import ButtonSeeMore from "../../components/ButtonSeeMore";
-import icons from "../../assets/icons";
-import { getRecommendProduct } from "../../redux/apiRequest";
+import HomeSectionCard from '~/partials/HomeSectionCard/HomeSectionCard.jsx';
+import React, { useRef, useState, useEffect } from 'react';
+import AliceCarousel from 'react-alice-carousel';
+import 'react-alice-carousel/lib/alice-carousel.css';
+import ButtonSeeMore from '../../components/ButtonSeeMore';
+import icons from '../../assets/icons';
+import { getRecommendProduct } from '../../redux/apiRequest';
+import FadeInSection from '../../components/motion/FadeInSection';
+import AnimatedCarouselItem from '../../components/motion/AnimatedCarouselItem';
 
 function SectionCarouselWatchedProductr() {
-  const carouselRef = useRef(null);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [recommendProduct, setRecommendProduct] =  useState(null)
-  const responsive = {
-    0: { items: 1 },
-    720: { items: 3 },
-    1024: { items: 4 },
-  };
+    const carouselRef = useRef(null);
+    const [activeIndex, setActiveIndex] = useState(0);
+    const [recommendProduct, setRecommendProduct] = useState(null);
+    const responsive = {
+        0: { items: 1 },
+        720: { items: 3 },
+        1024: { items: 4 },
+    };
 
-  
-  useEffect(() => {
-    callApiGetNewProduct()
-  },[])
+    useEffect(() => {
+        callApiGetNewProduct();
+    }, []);
 
+    const callApiGetNewProduct = async () => {
+        const res = await getRecommendProduct();
+        if (res) {
+            setRecommendProduct(res);
+        }
+    };
 
-  const callApiGetNewProduct = async () => {
-    const res = await getRecommendProduct();
-    if(res) {
-      setRecommendProduct(res);
-    }
-  }
+    const items = recommendProduct?.map((item, index) => (
+        <AnimatedCarouselItem key={item.id || index} item={item} index={index} activeIndex={activeIndex} />
+    ));
 
-
-  const items = recommendProduct?.map((item) => (
-    <HomeSectionCard item = {item}/>
-  ));
-
-
-
-  const prevActive = () => {
-    if (carouselRef.current) {
-      carouselRef.current.slidePrev();
-    }
-  };
-  const nextActive = () => {
-    if (carouselRef.current) {
-      carouselRef.current.slideNext();
-    }
-  };
-  const syncAcitve = ({ item }) => {
-    setActiveIndex(item);
-  };
-  return (
-    <div className="relative  lg:px-10 mt-8">
-      <div className="flex justify-center">
-        <span className="text-3xl font-sans font-medium py-4">
-          Gợi ý mua cùng
-        </span>
-      </div>
-      <div className="relative p-4">
-        <AliceCarousel
-          ref={carouselRef}
-          mouseTracking
-          items={items}
-          controlsStrategy="alternate"
-          infinite
-          disableButtonsControls
-          disableDotsControls
-          responsive={responsive}
-          activeIndex={activeIndex}
-          onSlideChanged={syncAcitve}
-        />
-      </div>
-      {activeIndex !== 0 && (
-        <div className="z-1">
-          <img
-            onClick={prevActive}
-            className="absolute left-0 top-64 cursor-pointer w-[40px]"
-            src={icons.iconArrowLeft}
-            alt=""
-          />
+    const prevActive = () => {
+        if (carouselRef.current) {
+            carouselRef.current.slidePrev();
+        }
+    };
+    const nextActive = () => {
+        if (carouselRef.current) {
+            carouselRef.current.slideNext();
+        }
+    };
+    const syncAcitve = ({ item }) => {
+        setActiveIndex(item);
+    };
+    return (
+        <div className="relative  lg:px-10 mt-8">
+            <div className="flex justify-center">
+                <span className="text-3xl font-sans font-medium py-4">Gợi ý mua cùng</span>
+            </div>
+            <div className="relative p-4">
+                <AliceCarousel
+                    ref={carouselRef}
+                    mouseTracking
+                    items={items}
+                    controlsStrategy="alternate"
+                    infinite
+                    disableButtonsControls
+                    disableDotsControls
+                    responsive={responsive}
+                    activeIndex={activeIndex}
+                    onSlideChanged={syncAcitve}
+                />
+            </div>
+            <FadeInSection>
+                {activeIndex !== 0 && (
+                    <div className="z-1">
+                        <img
+                            onClick={prevActive}
+                            className="absolute left-0 top-64 cursor-pointer w-[40px]"
+                            src={icons.iconArrowLeft}
+                            alt=""
+                        />
+                    </div>
+                )}
+            </FadeInSection>
+            <FadeInSection>
+                {activeIndex !== items?.length - 4 && (
+                    <div className="z-1">
+                        <img
+                            onClick={nextActive}
+                            className="absolute right-0 top-64 cursor-pointer w-[40px]"
+                            src={icons.iconArrowRight}
+                            alt=""
+                        />
+                    </div>
+                )}
+            </FadeInSection>
+            <FadeInSection>
+                <div className="flex justify-center mt-6">
+                    <ButtonSeeMore />
+                </div>
+            </FadeInSection>
         </div>
-      )}
-      {activeIndex !== items?.length - 4 && (
-        <div className="z-1">
-          <img
-            onClick={nextActive}
-            className="absolute right-0 top-64 cursor-pointer w-[40px]"
-            src={icons.iconArrowRight}
-            alt=""
-          />
-        </div>
-      )}
-      <div className="flex justify-center mt-6">
-        <ButtonSeeMore />
-      </div>
-    </div>
-  );
+    );
 }
 
 export default SectionCarouselWatchedProductr;

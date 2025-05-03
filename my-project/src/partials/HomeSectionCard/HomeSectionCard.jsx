@@ -9,6 +9,7 @@ import { addProductToFavoritesProduct, getAllProductsFavoriteByUsername } from '
 import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
 import FavoriteIcon from '@mui/icons-material/Favorite';
+import FadeInSection from '../../components/motion/FadeInSection';
 
 function HomeSectionCard({ item }) {
     const [showModalAddCard, setShowModalAddCard] = useState(false);
@@ -16,9 +17,9 @@ function HomeSectionCard({ item }) {
     const [hovered, setHovered] = useState(false);
     const [addCartDone, setAddCartDone] = useState(true);
 
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
 
-    const favoriteProduct = useSelector((state) => state?.product?.getAllFavoriteProduct?.currentAllProduct)
+    const favoriteProduct = useSelector((state) => state?.product?.getAllFavoriteProduct?.currentAllProduct);
 
     useEffect(() => {
         setChooseVariant(item?.variants[0]); // Reset về biến thể mặc định
@@ -45,7 +46,7 @@ function HomeSectionCard({ item }) {
                     const response = refreshtoken(accessToken);
                     const username = jwtDecode(response?.result?.token).sub;
                     const message = await addProductToFavoritesProduct(username, item?.productId);
-                    await getAllProductsFavoriteByUsername(username,dispatch)
+                    await getAllProductsFavoriteByUsername(username, dispatch);
                     toast.success(message);
                 } catch (error) {
                     localStorage.removeItem('token');
@@ -55,7 +56,7 @@ function HomeSectionCard({ item }) {
                 try {
                     const username = decodedToken.sub;
                     const message = await addProductToFavoritesProduct(username, item?.productId);
-                    await getAllProductsFavoriteByUsername(username,dispatch)
+                    await getAllProductsFavoriteByUsername(username, dispatch);
                     toast.success(message);
                 } catch (error) {
                     console.log(error);
@@ -91,56 +92,71 @@ function HomeSectionCard({ item }) {
             {/* Color */}
             <div className="">
                 <div className="flex justify-between mt-5">
-                    <div className="flex space-x-2">
-                        {item?.variants.map((variant, index) => (
-                            <div
-                                className="w-[18px] h-[18px] rounded-full border border-slate-500 relative cursor-pointer"
-                                style={{ backgroundColor: variant.colorCode }}
-                                onClick={() => setChooseVariant(variant)}
-                                key={index}
-                            >
-                                {chooseVariant === variant && (
-                                    <DoneIcon className="text-slate-400 absolute top-[-4px] left-[-4px]" />
-                                )}
-                            </div>
-                        ))}
-                    </div>
+                    <FadeInSection>
+                        <div className="flex space-x-2">
+                            {item?.variants.map((variant, index) => (
+                                <div
+                                    className="w-[18px] h-[18px] rounded-full border border-slate-500 relative cursor-pointer"
+                                    style={{ backgroundColor: variant.colorCode }}
+                                    onClick={() => setChooseVariant(variant)}
+                                    key={index}
+                                >
+                                    {chooseVariant === variant && (
+                                        <DoneIcon className="text-slate-400 absolute top-[-4px] left-[-4px]" />
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </FadeInSection>
                     {/* Favorite Product*/}
-                    <div>
-                        <FavoriteIcon onClick={handleClickFavoriteProduct} className={`w-5 h-5 ${favoriteProduct?.some(product => product.productId === item.productId) ? " text-pink-500" : "text-slate-300"} cursor-pointer`}/>
-                    </div>
-                </div>
-                <div className="font-sans font-light text-[18px] mb-2 truncate w-full">{item?.name}</div>
-                <div className="flex items-center justify-between">
-                    <span className="font-sans font-semibold text-xl">
-                        {' '}
-                        {item?.basePrice?.toLocaleString('vi-VN')}đ
-                    </span>
-                    <div className="relative">
-                        <span className="font-medium opacity-50 text-sm">
-                            {item?.oldPrice ? Math.round(item.oldPrice).toLocaleString('vi-VN') : ''}đ
-                        </span>
-                        <div className="h-[1px] w-full bg-black opacity-40 absolute z-5 top-1/2"></div>
-                    </div>
-                    {/* Add cart */}
-                    <div className="relative">
-                        <img
-                            onClick={toggleShowModalAddCard}
-                            className="w-10 h-10  cursor-pointer"
-                            src={icons.iconAddCart}
-                            alt=""
-                        />
-
-                        {showModalAddCard && (
-                            <ModalAddCart
-                                showModalAddCard={showModalAddCard}
-                                chooseVariant={chooseVariant}
-                                productId={item.productId}
-                                toggleShowModalAddCard={toggleShowModalAddCard}
+                    <FadeInSection>
+                        <div>
+                            <FavoriteIcon
+                                onClick={handleClickFavoriteProduct}
+                                className={`w-5 h-5 ${
+                                    favoriteProduct?.some((product) => product.productId === item.productId)
+                                        ? ' text-pink-500'
+                                        : 'text-slate-300'
+                                } cursor-pointer`}
                             />
-                        )}
-                    </div>
+                        </div>
+                    </FadeInSection>
                 </div>
+                <FadeInSection>
+                    <div className="font-sans font-light text-[18px] mb-2 truncate w-full">{item?.name}</div>
+                </FadeInSection>
+                <FadeInSection>
+                    <div className="flex items-center justify-between">
+                        <span className="font-sans font-semibold text-xl">
+                            {' '}
+                            {item?.basePrice?.toLocaleString('vi-VN')}đ
+                        </span>
+                        <div className="relative">
+                            <span className="font-medium opacity-50 text-sm">
+                                {item?.oldPrice ? Math.round(item.oldPrice).toLocaleString('vi-VN') : ''}đ
+                            </span>
+                            <div className="h-[1px] w-full bg-black opacity-40 absolute z-5 top-1/2"></div>
+                        </div>
+                        {/* Add cart */}
+                        <div className="relative">
+                            <img
+                                onClick={toggleShowModalAddCard}
+                                className="w-10 h-10  cursor-pointer"
+                                src={icons.iconAddCart}
+                                alt=""
+                            />
+
+                            {showModalAddCard && (
+                                <ModalAddCart
+                                    showModalAddCard={showModalAddCard}
+                                    chooseVariant={chooseVariant}
+                                    productId={item.productId}
+                                    toggleShowModalAddCard={toggleShowModalAddCard}
+                                />
+                            )}
+                        </div>
+                    </div>
+                </FadeInSection>
             </div>
         </div>
     );

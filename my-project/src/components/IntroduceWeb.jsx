@@ -1,9 +1,11 @@
 import icons from "../assets/icons";
+import FadeInSection from "./motion/FadeInSection";
 
 function IntroduceWeb() {
   return (
     <div className="w-full h-auto flex justify-around py-8">
-      <div className="flex space-x-4 items-center">
+     <FadeInSection>
+     <div className="flex space-x-4 items-center">
         <img className="w-12 h-14" src={icons.iconTranSit} alt="" />
         <div className="flex flex-col justify-center space-y-1">
           <span className="font-sans font-semibold">
@@ -12,6 +14,8 @@ function IntroduceWeb() {
           <span className="font-light">Áp dụng với đơn hàng trên 100.000đ</span>
         </div>
       </div>
+     </FadeInSection>
+      <FadeInSection>
       <div className="flex space-x-4 items-center">
         <img className="w-12 h-14" src={icons.iconLike} alt="" />
         <div className="flex flex-col justify-center space-y-1">
@@ -19,6 +23,8 @@ function IntroduceWeb() {
           <span className="font-light">An tâm về chất lượng sản phẩm</span>
         </div>
       </div>
+      </FadeInSection>
+      <FadeInSection>
       <div className="flex space-x-4 items-center">
         <img className="w-12 h-14" src={icons.iconSell} alt="" />
         <div className="flex flex-col justify-center space-y-1">
@@ -26,6 +32,7 @@ function IntroduceWeb() {
           <span className="font-light">Trong 15 ngày kể từ ngày mua</span>
         </div>
       </div>
+      </FadeInSection>
     </div>
   );
 }
