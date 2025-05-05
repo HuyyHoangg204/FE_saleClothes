@@ -54,9 +54,6 @@ function Order() {
                 case "BANK_TRANSFER":
                     //To do
                     break;
-                case "BANK_TRANSFER":
-                    //To do
-                    break;
                 case "E_WALLET":
                     //To do
                     break;

@@ -1,49 +1,83 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { format } from 'date-fns';
+import axiosInstance from '../../redux/axiosConfig';
+import { getDataProductToShowOrder } from '../../redux/apiRequest';
+import { useDispatch, useSelector } from 'react-redux';
+function OrderDetails({ orderId, onBack, data }) {
+    // Dữ liệu
+    const [orderDetail, setOrderDetail] = useState({});
+    const [productInfoList, setProductInfoList] = useState([]);
 
-function OrderDetails({ orderId, onBack }) {
-    // Dữ liệu mẫu chi tiết đơn hàng
-    const orderDetails = {
-        id: 'CNF000092998',
-        date: '03/11/2024 - 03:39',
-        status: 'Đang vận chuyển',
-        customerName: 'Hoang',
-        phone: '0965523100',
-        address: 'KĐT Văn Canh, Huyện Hoài Đức, Hà Nội',
-        payment: 'Thanh toán khi nhận hàng',
-        items: [
-            {
-                name: 'Combo 2 khăn mặt',
-                color: 'Hồng',
-                size: 'XL',
-                price: '79.000đ',
-                quantity: 1,
-                total: '499.000đ',
-            },
-        ],
-        totalAmount: '499.000đ',
+    const username = useSelector((state) => state.auth?.username);
+
+    useEffect(() => {
+        const fetchAllProductData = async () => {
+            const results = await Promise.all(
+                orderDetail.orderDetails.map((item) => getDataProductToShowOrder(item.productVariantId, username)),
+            );
+            setProductInfoList(results);
+        };
+
+        if (orderDetail?.orderDetails) {
+            fetchAllProductData();
+        }
+    }, [orderDetail, username]);
+
+    // Payment method
+    const paymentMethodMap = {
+        COD: 'Thanh toán khi nhận hàng',
+        BANK_TRANSFER: 'Chuyển khoản ngân hàng',
+        E_WALLET: 'Ví điện tử',
+        CREDIT_CARD: 'Thẻ tín dụng',
+        VNPAY: 'Thanh toán qua VNPAY',
     };
+
+    // Status order
+    const statusMap = {
+        PENDING: 'Chờ xử lý',
+        PROCESSING: 'Đang xử lý',
+        SHIPPED: 'Đã gửi hàng',
+        DELIVERED: 'Đã giao hàng',
+        CANCELLED: 'Đã hủy',
+        RETURNED: 'Trả hàng',
+    };
+
+    useEffect(() => {
+        setOrderDetail(data[0]);
+    }, [data]);
 
     return (
         <div className="flex-1 bg-white px-[40px] py-[20px]">
             <button onClick={onBack} className="text-blue-600 hover:underline mb-4 inline-block">
                 &lt; Quay lại
             </button>
-            <h2 className="text-2xl font-semibold mb-6">Mã đơn hàng: {orderDetails.id}</h2>
+            <h2 className="text-2xl font-semibold mb-6">Mã đơn hàng: {orderDetail?.orderCode}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
+                <div className='space-y-1'>
                     <h3 className="font-bold mb-2">Thông tin người nhận</h3>
-                    <p className="text-gray-700">Người nhận: {orderDetails.customerName}</p>
-                    <p className="text-gray-700">Số điện thoại: {orderDetails.phone}</p>
-                    <p className="text-gray-700">Địa chỉ: {orderDetails.address}</p>
-                    <p className="text-gray-700">Thanh toán: {orderDetails.payment}</p>
+                    <p className="text-gray-700">Người nhận: {orderDetail?.address?.fullName}</p>
+                    <p className="text-gray-700">Số điện thoại: {orderDetail?.address?.phoneNumber}</p>
+                    <p className="text-gray-700">
+                        Địa chỉ:{' '}
+                        {`${orderDetail?.address?.detailAddress},${orderDetail?.address?.village},${orderDetail?.address?.district},${orderDetail?.address?.province}`}
+                    </p>
+                    <p className="text-gray-700">
+                        Thanh toán: {paymentMethodMap[orderDetail?.paymentMethod] || 'Không xác định'}
+                    </p>
                 </div>
                 <div>
                     <h3 className="font-bold mb-2">Theo dõi đơn hàng</h3>
-                    <p className="text-gray-700">Trạng thái: {orderDetails.status}</p>
+                    <p className="text-gray-700">Trạng thái: {statusMap[orderDetail?.status] || 'Không xác định'}</p>
                     <ul className="list-inside list-disc text-gray-700">
-                        <li>Đã giao cho đơn vị vận chuyển (20:44, 01/11/2024)</li>
+                        {/* <li>Đã giao cho đơn vị vận chuyển (20:44, 01/11/2024)</li>
                         <li>Đang xử lý (20:44, 01/11/2024)</li>
-                        <li>Đặt hàng thành công (20:44, 01/11/2024)</li>
+                        <li>Đặt hàng thành công (20:44, 01/11/2024)</li> */}
+                        {orderDetail?.orderStatusHistories?.map((statusHistory, index) => (
+                            <li key={index}>
+                                {statusHistory.description}(
+                                {format(new Date(statusHistory?.statusDate), 'HH:mm - dd/MM/yyyy')})
+                            </li>
+                        ))}
                     </ul>
                 </div>
             </div>
@@ -63,18 +97,27 @@ function OrderDetails({ orderId, onBack }) {
                         </tr>
                     </thead>
                     <tbody>
-                        {orderDetails.items.map((item, index) => (
-                            <tr key={index} className="hover:bg-gray-100">
-                                <td className="px-6 py-4 border-b text-sm text-gray-800">{item.name}</td>
-                                <td className="px-6 py-4 border-b text-sm text-gray-800">{item.price}</td>
-                                <td className="px-6 py-4 border-b text-sm text-gray-800">{item.quantity}</td>
-                                <td className="px-6 py-4 border-b text-sm text-gray-800">{item.total}</td>
-                            </tr>
-                        ))}
+                        {orderDetail?.orderDetails?.map((item, index) => {
+                            const product = productInfoList[index];
+                            const total = item.quantity * (product?.base_price || 0);
+
+                            return (
+                                <tr key={index} className="hover:bg-gray-100">
+                                    <td className="px-6 py-4 border-b text-sm text-gray-800">
+                                        {product?.name || '...'}
+                                    </td>
+                                    <td className="px-6 py-4 border-b text-sm text-gray-800">
+                                        {product?.base_price?.toLocaleString('vi-VN') || '...'}đ
+                                    </td>
+                                    <td className="px-6 py-4 border-b text-sm text-gray-800">{item.quantity}</td>
+                                    <td className="px-6 py-4 border-b text-sm text-gray-800">{total.toLocaleString('vi-VN')}đ</td>
+                                </tr>
+                            );
+                        })}
                     </tbody>
                 </table>
                 <div className="mt-4 text-right">
-                    <p className="font-bold text-lg">Tổng tiền thanh toán: {orderDetails.totalAmount}</p>
+                    <p className="font-bold text-lg">Tổng tiền thanh toán: {orderDetail?.totalAmount?.toLocaleString('vi-VN')}đ</p>
                 </div>
             </div>
         </div>

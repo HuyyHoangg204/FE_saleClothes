@@ -865,7 +865,7 @@ export const getListProductBySearchLetters = async (query, page, size, isSort, s
     }
 }
 
-//Order
+//Create Order
 export const handleOrder = async (data) => {
     try{
         const accessToken = localStorage.getItem('token')
@@ -875,6 +875,37 @@ export const handleOrder = async (data) => {
         const res = (await axiosInstance.post(`${REST_API_V1_URL}/order`,data, config))
         toast.success("Đặt hàng thành công!")
         
+        }
+    catch(err){
+        console.log(err)
+       
+    }
+}
+//Get all order by username
+export const getAllOrderByUsername = async (username) => {
+    try{
+        const accessToken = localStorage.getItem('token')
+        if(!accessToken){
+            throw new Error("Không tìm thấy token!")
+        }
+        const res = (await axiosInstance.get(`${REST_API_V1_URL}/order/${username}`, config))
+        return res.data.result
+        }
+    catch(err){
+        console.log(err)
+       
+    }
+}
+
+//Get information product to show order managet(user)
+export const getDataProductToShowOrder = async (variant_id,username) => {
+    try{
+        const accessToken = localStorage.getItem('token')
+        if(!accessToken){
+            throw new Error("Không tìm thấy token!")
+        }
+        const res = (await axiosInstance.get(`${REST_API_V1_URL}/productOrder/${variant_id}?username=${username}`, config))
+        return res.data.result
         }
     catch(err){
         console.log(err)

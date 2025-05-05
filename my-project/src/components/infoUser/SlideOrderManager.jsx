@@ -1,23 +1,39 @@
+import { useEffect, useState } from 'react';
 import icon from '../../assets/icons/index.jsx';
+import { getAllOrderByUsername } from '../../redux/apiRequest.js';
+import { useDispatch, useSelector } from 'react-redux';
+import { format } from 'date-fns';
 
-function SlideOrderManager({ handleChange, onViewDetails   }) {
-    const orders = [
-        {
-          id: 'CNF000092998',
-          date: '03/11/2024 - 03:39',
-          status: 'Đang vận chuyển',
-          quantity: 1,
-          total: '499.000đ',
-          detailLink: '#'
-        },
-    ];
+function SlideOrderManager({ handleChange, onViewDetails ,handleGetData}) {
+    const [orders, setOrders] = useState([]);
+    // const orders = [
+    //     {
+    //         id: 'CNF000092998',
+    //         date: '03/11/2024 - 03:39',
+    //         status: 'Đang vận chuyển',
+    //         quantity: 1,
+    //         total: '499.000đ',
+    //         detailLink: '#',
+    //     },
+    // ];
+
+    const username = useSelector((state) => state.auth?.username);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const res = await getAllOrderByUsername(username);
+            setOrders(res);
+            handleGetData(res)
+        };
+        fetchData();
+    }, []);
     return (
         <div className="flex-1 bg-white px-[40px] py-[20px]">
             <div className="font-semibold text-[26px] mb-5">QUẢN LÝ ĐƠN HÀNG</div>
             <div className="overflow-x-auto">
                 <table className="min-w-full text-sm bg-white">
                     <thead>
-                        <tr className='border-b border-t'>
+                        <tr className="border-b border-t">
                             <th className="py-3 text-center font-medium text-gray-700">Mã đơn hàng</th>
                             <th className="py-3 text-center font-medium text-gray-700">Ngày</th>
                             <th className="py-3 text-center font-medium text-gray-700">Trạng thái</th>
@@ -27,24 +43,53 @@ function SlideOrderManager({ handleChange, onViewDetails   }) {
                         </tr>
                     </thead>
                     <tbody>
-                        {orders.map((order, index) => (
-                            <tr key={index} className="hover:bg-gray-100 border-b text-[14px] text-gray-800">
-                                <td className="py-4 text-center">{order.id}</td>
-                                <td className="py-4 text-center">{order.date}</td>
-                                <td className="py-4 text-center">
-                                    <button onClick={() => onViewDetails(order.id)} className="px-2 py-1 rounded-full text-[10px] font-semibold bg-blue-100 text-blue-600">
-                                        {order.status}
-                                    </button>
-                                </td>
-                                <td className="py-4 text-center">{order.quantity}</td>
-                                <td className="py-4 text-center">{order.total}</td>
-                                <td className="py-4 text-center text-blue-600">
-                                    <button onClick={() => onViewDetails(order.id)} className="hover:underline">
-                                        Chi tiết
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
+                        {orders.map((order, index) => {
+                            const totalQuantity = order?.orderDetails.reduce(
+                                (total, detail) => total + detail.quantity,
+                                0,
+                            );
+
+                            return (
+                                <tr key={index} className="hover:bg-gray-100 border-b text-[14px] text-gray-800">
+                                    <td className="py-4 text-center">{order?.orderCode}</td>
+                                    <td className="py-4 text-center">
+                                        {' '}
+                                        {format(new Date(order?.orderDate), 'dd/MM/yyyy - HH:mm')}
+                                    </td>
+                                    <td className="py-4 text-center">
+                                        <button
+                                            onClick={() => onViewDetails(order?.orderCode)}
+                                            className={`px-2 py-1 rounded-full text-[10px] font-semibold
+                                                    ${order?.status === 'PENDING' ? 'bg-yellow-100 text-yellow-600' : ''}
+                                                    ${order?.status === 'PROCESSING' ? 'bg-blue-100 text-blue-600' : ''}
+                                                    ${order?.status === 'SHIPPED' ? 'bg-teal-100 text-teal-600' : ''}
+                                                    ${order?.status === 'DELIVERED' ? 'bg-green-100 text-green-600' : ''}
+                                                    ${order?.status === 'CANCELLED' ? 'bg-red-100 text-red-600' : ''}
+                                                    ${
+                                                        order?.status === 'RETURNED'
+                                                            ? 'bg-purple-100 text-purple-600'
+                                                            : ''
+                                                    }
+                                                `}
+                                        >
+                                            {order?.status === 'PENDING' && 'Chưa xử lý'}
+                                            {order?.status === 'PROCESSING' && 'Đang xử lý'}
+                                            {order?.status === 'SHIPPED' && 'Đã gửi hàng'}
+                                            {order?.status === 'DELIVERED' && 'Đã giao hàng'}
+                                            {order?.status === 'CANCELLED' && 'Đã hủy'}
+                                            {order?.status === 'RETURNED' && 'Trả hàng'}
+                                        </button>
+                                    </td>
+                                    <td className="py-4 text-center">{totalQuantity}</td>
+                                    <td className="py-4 text-center">{order?.totalAmount.toLocaleString('vi-VN')}đ</td>
+                                    <td className="py-4 text-center text-blue-600">
+                                        <button onClick={() => onViewDetails(order.orderCode)} className="hover:underline">
+                                            Chi tiết
+                                        </button>
+                                    </td>
+                                </tr>
+                            );
+                        })}
                     </tbody>
                 </table>
             </div>

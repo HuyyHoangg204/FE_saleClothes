@@ -24,8 +24,9 @@ function BreadCrumb({ breadcrumb }) {
                     initial={{ opacity: 0, y: 30 }}
                     animate={inView ? { opacity: 1, y: 0 } : {}}
                     transition={{ duration: 0.6, ease: 'easeOut', delay: index * 0.1 }}
+                    key={index}
                 >
-                    <div key={index} className="">
+                    <div  className="">
                         <span
                             onClick={() => hanleClick(item)}
                             className="font-sans font-light text-[14px] cursor-pointer"
