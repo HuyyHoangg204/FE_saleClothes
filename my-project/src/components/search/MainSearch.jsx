@@ -44,15 +44,40 @@ function MainSearch({ handleCloseMainSearch }) {
     };
     // handle enter search product
     const handleEnterSearchProduct = (e) => {
-        if (e.key !== 'Enter') return;   // chỉ xử lý Enter
-        if (query.trim().length > 0) {
-          navigate(`/tim-kiem/${encodeURIComponent(query.trim())}`);
-          handleCloseMainSearch()
+        if (e.key !== 'Enter') return; // chỉ xử lý Enter
+
+        const trimmedQuery = query.trim();
+
+        if (trimmedQuery.length > 0) {
+            // Lấy dữ liệu lịch sử hiện có từ localStorage
+            const dataHistorySearch = localStorage.getItem('shop/user/searchQuery/header');
+            let history = [];
+
+            if (dataHistorySearch) {
+                try {
+                    history = JSON.parse(dataHistorySearch);
+                } catch (err) {
+                    console.error('Lỗi khi parse dữ liệu lịch sử tìm kiếm:', err);
+                    history = [];
+                }
+            }
+
+            // Thêm truy vấn mới vào đầu mảng, tránh trùng lặp
+            const newEntry = { search: trimmedQuery };
+            const filteredHistory = history.filter((item) => item.search !== trimmedQuery);
+            const updatedHistory = [newEntry, ...filteredHistory].slice(0, 10); // giữ tối đa 10 mục
+
+            // Lưu lại vào localStorage
+            localStorage.setItem('shop/user/searchQuery/header', JSON.stringify(updatedHistory));
+
+            // Điều hướng và đóng modal tìm kiếm
+            navigate(`/tim-kiem/${encodeURIComponent(trimmedQuery)}`);
+            handleCloseMainSearch();
         } else {
-          handleCloseMainSearch();
+            handleCloseMainSearch();
         }
-      };
-      
+    };
+
     // handle change data search
     const handleChangeInputSearch = (e) => {
         setQuery(e.target.value);

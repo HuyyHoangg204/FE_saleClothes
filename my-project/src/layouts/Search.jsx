@@ -33,7 +33,7 @@ function Search({handleCloseMainSearch}) {
     return (
         <div className="w-full h-screen bg-white fixed z-10">
             <MainSearch handleCloseMainSearch={handleCloseMainSearch}/>
-            {isHistorySearch && <HistorySearch handleDeleteHistorySearch={handleDeleteHistorySearch} historySearch={historySearch} />}
+            {isHistorySearch && <HistorySearch handleCloseMainSearch={handleCloseMainSearch} handleDeleteHistorySearch={handleDeleteHistorySearch} historySearch={historySearch} />}
         </div>
     );
 }
