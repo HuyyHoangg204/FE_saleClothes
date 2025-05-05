@@ -1,6 +1,7 @@
 import '~/css/header.css';
 import { Link } from 'react-router-dom';
 import { categoryLittleBoy1, categoryLittleGirl1 } from '../../pages/sale/categoryData';
+import FadeInSection from '../../components/motion/FadeInSection';
 
 function CategoryChild() {
     const categoryLittleBoy = categoryLittleBoy1
@@ -10,7 +11,8 @@ function CategoryChild() {
             style={{ width: '1312px', height: '310px', top: '6rem', left: '50%', transform: 'translate(-50%, 0)' }}
             className="top36rem bg-white z-10 cursor-default border flex justify-between px-10 pt-4 fixed rounded-sm shadow font-sans"
         >
-            <div>
+           <FadeInSection>
+           <div>
                 <ul>
                     <li className="font-semibold pb-2">Bé nam</li>
                     {categoryLittleBoy.map((item, index) => (
@@ -20,6 +22,8 @@ function CategoryChild() {
                     ))}
                 </ul>
             </div>
+           </FadeInSection>
+            <FadeInSection delay={0.2}>
             <div>
                 <ul>
                     <li className="font-semibold pb-2">Bé nữ</li>
@@ -30,7 +34,9 @@ function CategoryChild() {
                     ))}
                 </ul>
             </div>
-            <div className="flex justify-around space-x-3">
+            </FadeInSection>
+           <FadeInSection delay={0.3}>
+           <div className="flex justify-around space-x-3">
                 <div className="flex h-full items-center space-x-2">
                     <img className="object-cover h-[267px] w-[201px]" src="/images/maubenam.webp" alt="" />
                     <img className="object-cover h-[267px] w-[201px]" src="/images/maubenam1.webp" alt="" />
@@ -39,6 +45,7 @@ function CategoryChild() {
                     <img className="object-cover h-[267px] w-[201px]" src="/images/maubenu1.webp" alt="" />
                 </div>
             </div>
+           </FadeInSection>
         </div>
     );
 }

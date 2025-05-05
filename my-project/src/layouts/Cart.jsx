@@ -3,12 +3,16 @@ import { useDispatch, useSelector } from 'react-redux';
 import icons from '../assets/icons';
 import '../css/Cart.css';
 import ProductCart from '../components/ProductCart';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 function Cart({ toggleHideCart }) {
     const [isClosing, setIsClosing] = useState(false); // Trạng thái cho hiệu ứng đóng
     const [quantityProduct, setQuantityProduct] = useState(0);
     const [items, setItem] = useState(null);
     const [totalPrice, setTotalPrice] = useState(0);
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         let guestCartId = localStorage.getItem('guestCartId');
@@ -28,7 +32,7 @@ function Cart({ toggleHideCart }) {
             return;
         }
 
-        const quantity = Object.values(productFromCart.result).reduce((acc, value) => acc + value, 0);
+        const quantity = Object.values(productFromCart?.result).reduce((acc, value) => acc + value, 0);
         setQuantityProduct(quantity);
         setItem(Object.entries(productFromCart.result));
     }, [productFromCart]);
@@ -46,6 +50,16 @@ function Cart({ toggleHideCart }) {
 
     const handleRemovePrice = (price) => {
         setTotalPrice(prevTotal => prevTotal - price)
+    }
+
+    // Handle click event payment
+    const handleClickPayment = () => {
+        if(items?.length <= 0) {
+            toast.warn("Chưa có sản phẩm nào trong giỏ hàng!!");
+        } else {
+            navigate("/order")
+        }
+        
     }
 
     return (
@@ -66,7 +80,7 @@ function Cart({ toggleHideCart }) {
                         />
                     </div>
                     <div className="font-light font-sans mt-2">
-                        Hãy gọi là Hoàng đẹp trai để có được những ưu đãi ❤️
+                        Hãy gọi cho Hoàng đẹp trai để có được những ưu đãi ❤️
                     </div>
                 </div>
 
@@ -87,9 +101,9 @@ function Cart({ toggleHideCart }) {
                         </span>
                     </div>
                     <div className="flex justify-center">
-                        <a className="w-full h-[58px]" href="/order">
-                            <button className="w-full h-[58px] bg-black text-white text-center">THANH TOÁN</button>
-                        </a>
+                        <div className="w-full h-[58px]">
+                            <button onClick={handleClickPayment} className="w-full h-[58px] bg-black text-white text-center">THANH TOÁN</button>
+                        </div>
                     </div>
                 </div>
             </div>

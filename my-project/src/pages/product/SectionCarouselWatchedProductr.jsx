@@ -4,6 +4,8 @@ import AliceCarousel from 'react-alice-carousel';
 import 'react-alice-carousel/lib/alice-carousel.css';
 import ButtonSeeMore from '../../components/ButtonSeeMore';
 import icons from '../../assets/icons';
+import FadeInSection from '../../components/motion/FadeInSection';
+import AnimatedCarouselItem from '../../components/motion/AnimatedCarouselItem';
 
 function SectionCarouselWatchedProductr({ dataProductWatched }) {
     const carouselRef = useRef(null);
@@ -18,8 +20,8 @@ function SectionCarouselWatchedProductr({ dataProductWatched }) {
     useEffect(() => {
         setProductWatched(dataProductWatched);
     }, [dataProductWatched]);
-    const items = productWatched?.map((item) => (
-      <HomeSectionCard item = {item}/>
+    const items = productWatched?.map((item, index) => (
+        <AnimatedCarouselItem key={item.id || index} item={item} index={index} activeIndex={activeIndex} />
     ));
 
     const prevActive = () => {
@@ -54,29 +56,35 @@ function SectionCarouselWatchedProductr({ dataProductWatched }) {
                     onSlideChanged={syncAcitve}
                 />
             </div>
-            {activeIndex !== 0 && (
-                <div className="z-1">
-                    <img
-                        onClick={prevActive}
-                        className="absolute left-0 top-64 cursor-pointer w-[40px]"
-                        src={icons.iconArrowLeft}
-                        alt=""
-                    />
+            <FadeInSection>
+                {activeIndex !== 0 && (
+                    <div className="z-1">
+                        <img
+                            onClick={prevActive}
+                            className="absolute left-0 top-64 cursor-pointer w-[40px]"
+                            src={icons.iconArrowLeft}
+                            alt=""
+                        />
+                    </div>
+                )}
+            </FadeInSection>
+            <FadeInSection>
+                {activeIndex !== items?.length - 4 && (
+                    <div className="z-1">
+                        <img
+                            onClick={nextActive}
+                            className="absolute right-0 top-64 cursor-pointer w-[40px]"
+                            src={icons.iconArrowRight}
+                            alt=""
+                        />
+                    </div>
+                )}
+            </FadeInSection>
+            <FadeInSection>
+                <div className="flex justify-center mt-6">
+                    <ButtonSeeMore />
                 </div>
-            )}
-            {activeIndex !== items?.length - 4 && (
-                <div className="z-1">
-                    <img
-                        onClick={nextActive}
-                        className="absolute right-0 top-64 cursor-pointer w-[40px]"
-                        src={icons.iconArrowRight}
-                        alt=""
-                    />
-                </div>
-            )}
-            <div className="flex justify-center mt-6">
-                <ButtonSeeMore />
-            </div>
+            </FadeInSection>
         </div>
     );
 }

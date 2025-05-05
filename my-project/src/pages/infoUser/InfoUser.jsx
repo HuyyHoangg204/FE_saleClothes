@@ -19,6 +19,8 @@ function InfoUser({ breadcrumb }) {
     // State để quản lý trang hiện tại
     const [currentPage, setCurrentPage] = useState('infoUser');
     const [viewingOrder, setViewingOrder] = useState(null);
+    const [data, setData] = useState([]);
+    const [dataOrderDetail, setDataOrderDetail] = useState([]);
 
     const dispatch = useDispatch()
 
@@ -33,6 +35,12 @@ function InfoUser({ breadcrumb }) {
         }
         fetchData()
     },[])
+
+    //Lọc dữ liệu từ data thông qua orderCode để truyền xuống SlideOrderDetail
+    useEffect(() => {
+        const temp = data?.filter(order => order.orderCode === viewingOrder)
+        setDataOrderDetail(temp)
+    },[viewingOrder])
 
 
 
@@ -54,6 +62,11 @@ function InfoUser({ breadcrumb }) {
         setViewingOrder(null);
         setCurrentPage('orderManager');
     };
+
+    // Hàm để lấy data từ SlideOrderManager.jsx
+    const handleGetData = (data) => {
+        setData(data)
+    }
     if (loading) {
         return (
             <div className="flex justify-center items-center h-20">
@@ -86,10 +99,10 @@ function InfoUser({ breadcrumb }) {
                 {/* Render các thành phần theo trạng thái của currentPage */}
                 {currentPage === 'infoUser' && <SlideInfoUser user={user}/>}
                 {currentPage === 'orderManager' && (
-                    <SlideOrderManager onViewDetails={handleViewDetails} />
-                )}
+                    <SlideOrderManager onViewDetails={handleViewDetails} handleGetData={handleGetData}/>
+                )} 
                 {currentPage === 'orderDetail' && viewingOrder && (
-                    <SlideOrderDetail orderId={viewingOrder} onBack={handleBackToList} />
+                    <SlideOrderDetail orderId={viewingOrder} onBack={handleBackToList} data={dataOrderDetail}/>
                 )}
                 {currentPage === 'addressUser' && <SlideAddressUser />}
                 {currentPage === 'favoriteUser' && <SlideFavoriteUser />}

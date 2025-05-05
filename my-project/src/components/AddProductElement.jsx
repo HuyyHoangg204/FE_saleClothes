@@ -2,13 +2,13 @@ import React, { useEffect, useRef, useState } from 'react';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import CloseIcon from '@mui/icons-material/Close';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
+import { getAllColorProduct } from '../redux/apiRequest';
 
 function AddProductElement({
     handleRemoveTypeProduct,
     index,
     openAddImage,
     handleClickChooseColor,
-    colors,
     handleAddProductVariantData,
 }) {
     const [selectedColor, setSelectedColor] = useState('');
@@ -18,11 +18,23 @@ function AddProductElement({
     const [showAllSize, setShowAllSize] = useState(false);
     const [listSizes, setListSizes] = useState([]);
     const [stock, setStock] = useState(0);
+    const [colors, setColors] = useState([])
     const sizes = ['S', 'M', 'L', 'XL', '2XL'];
 
     useEffect(() => {
         handleAddProductVariantData(index, colorId, listSizes, stock);
     }, [colorId, listSizes, stock]); // Lắng nghe sự thay đổi của các state này
+
+    //Call api when coponent mount
+    useEffect(() => {
+        
+        const fetchData = async () => {
+            //Call api get all color product
+            const res = await getAllColorProduct();            
+            setColors(res)
+        }
+        fetchData();
+    },[])
 
     const handleSelect = (color) => {
         setSelectedColor(color);
@@ -79,7 +91,7 @@ function AddProductElement({
                 {/* Dropdown */}
                 {showAllColor && (
                     <ul className="absolute bg-white border border-gray-300 rounded-lg mt-2 w-full shadow-lg">
-                        {colors.map((item, index) => (
+                        {colors?.map((item, index) => (
                             <li
                                 key={index}
                                 className="flex items-center p-2 cursor-pointer hover:bg-gray-100"
@@ -109,7 +121,7 @@ function AddProductElement({
                 </div>
                 {showAllSize && (
                     <ul className="absolute bg-white border border-gray-300 rounded-lg mt-2 w-full shadow-lg z-10">
-                        {sizes.map((item, index) => (
+                        {sizes?.map((item, index) => (
                             <li
                                 className="flex items-center p-2 cursor-pointer hover:bg-gray-100"
                                 key={index}
@@ -125,7 +137,7 @@ function AddProductElement({
                 )}
             </div>
             {/*  */}
-            {listSizes.map((item, index) => (
+            {listSizes?.map((item, index) => (
                 <div className="relative">
                     <div
                         key={index}

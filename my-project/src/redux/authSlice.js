@@ -22,6 +22,7 @@ const authSlice = createSlice({
       error: false,
       success: false,
     },
+    username: null,
   },
   reducers: {
     loginStart: (state) => {
@@ -60,11 +61,16 @@ const authSlice = createSlice({
       state.register.isFetching = false;
       state.register.success = true;
       state.register.error = false;
+      state.username = null;
     },
     logoutFailed: (state) => {
       state.register.isFetching = false;
       state.register.error = true;
       state.register.success = false;
+    },
+
+    setUsername: (state, action) => {
+      state.username = action.payload;
     },
   
   },
@@ -79,6 +85,7 @@ export const {
   logoutStart,
   logoutSuccess,
   logoutFailed,
+  setUsername,
 } = authSlice.actions;
 
 export default authSlice.reducer;

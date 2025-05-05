@@ -15,10 +15,29 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import VoucherManagement from "./modal/Voucher/VoucherManagement.jsx";
 import SearchProductPage from "./pages/SearchProductPage/SearchProductPage.jsx";
+import { useDispatch } from "react-redux";
+import { setUsername } from "./redux/authSlice.js";
+import { jwtDecode } from "jwt-decode";
+import OrderSuccess from "./layouts/OrderSuccess.jsx";
 
 
 function App() {
   const location = useLocation();
+  const dispatch = useDispatch();
+
+  //luu username
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        const username = decoded.sub || decoded.username;
+        dispatch(setUsername(username));
+      } catch (err) {
+        console.error('Invalid token:', err);
+      }
+    }
+  }, [dispatch]);
 
   useEffect(() => {
     document.querySelector("html").style.scrollBehavior = "auto";
@@ -39,6 +58,7 @@ function App() {
         <Route path="/danh-muc/:gender/:categorySlug" element={<SalePages/>}/>
         <Route path="/tim-kiem/:query" element={<SearchProductPage/>}/>
         <Route path= "/order" element= {<Order/>}/>
+        <Route path= "/thank-you" element= {<OrderSuccess/>}/>
       </Routes>
       <ToastContainer position="top-right" autoClose={3000} />
     </div>
