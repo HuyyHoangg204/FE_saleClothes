@@ -57,6 +57,10 @@ function UpdateProductElement({
         // handleDataChange();
     };
     useEffect(() => {
+        console.log(colors);
+        
+    },[colors])
+    useEffect(() => {
        if(listSize !== undefined) {
         setListSizes(listSize);
        }
@@ -94,7 +98,7 @@ function UpdateProductElement({
                 {/* Dropdown */}
                 {showAllColor && (
                     <ul className="absolute bg-white border border-gray-300 rounded-lg mt-2 w-full shadow-lg">
-                        {colors.map((item, index) => (
+                        {colors?.map((item, index) => (
                             <li
                                 key={index}
                                 className="flex items-center p-2 cursor-pointer hover:bg-gray-100"

@@ -15,7 +15,7 @@ function ProductTable({
   const [show3Dot, setShow3Dot] = useState(true);
   const [accessToken, setAccessToken] = useState("");
 
-  const dispatch = useDispatch();
+  
 
    const allSubCategory = useSelector((state) => state.category.getAllSubCategory?.currentAllSubCategory);
   useEffect(() => {
@@ -29,9 +29,7 @@ function ProductTable({
     startIndex,
     startIndex + itemsPerPage
   );
-  useEffect(() => {
-    console.log(selectedProducts)
-  },[])
+
   useEffect(() => {
     if (totalPages <= 3) {
       setShow3Dot(false);
@@ -78,20 +76,9 @@ function ProductTable({
     setCurrentPage(page);
   };
 
-  const allImageData = useSelector(state => state.product.getAllImageProduct?.currentAllImageProduct)
-  const allImageUrl = allImageData?.result;
-  useEffect(() => {
-    downloadAllImage(accessToken,dispatch);
-  },[])
-  const getImageUrlProduct = (spMa) => {
-    if (!allImageUrl || allImageUrl.length === 0) {
-      console.log("allImageUrl is not ready or empty");
-      return;
-    }
-    const image = allImageUrl.find(image => image.maSp === spMa);
-    const result = image?.imageUrl;
-    return result;
-  }
+
+
+
   return (
     <div>
       <div className="overflow-x-auto">
@@ -158,11 +145,7 @@ function ProductTable({
                   className="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                 >
                   <div className="flex items-center mr-3">
-                    <img
-                      src={getImageUrlProduct(product.spMa)}
-                      alt=""
-                      className="h-8 w-auto mr-3"
-                    />
+                    
                     {product.name}
                   </div>
                 </th>

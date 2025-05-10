@@ -10,10 +10,13 @@ import { Outlet, useNavigate } from "react-router-dom";
 import DashboardMain from "../layouts/DashboardMain";
 import Product from "../layouts/Product";
 import VoucherManagement from "../modal/Voucher/VoucherManagement";
+import OrderManagement from "../modal/Order/OrderManagement";
+import OrderViewDetail from "../modal/Order/OrderViewDetail";
 
 function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [currentComponent, setCurrentComponent] = useState("dashboard");
+  const [orderId, setOrderId] = useState(null)
   // const [token, setToken] = useState(null); // Khởi tạo token rỗng
   // const [isLoading, setIsLoading] = useState(true);
   // const [role,setRole] = useState("")
@@ -45,13 +48,16 @@ function Dashboard() {
   // }, [navigate]);
 
   //render
-  console.log(currentComponent)
   const renderComponent = () => {
     switch (currentComponent) {
       case "product":
         return <Product />;
       case "voucher":
-        return <VoucherManagement/>
+        return <VoucherManagement/>;
+      case "order":
+        return <OrderManagement setCurrentComponent={setCurrentComponent} setOrderId={setOrderId}/>
+      case "orderDetail":
+        return <OrderViewDetail setCurrentComponent={setCurrentComponent} orderId={orderId}/>
       default:
         return <DashboardMain/>
     }

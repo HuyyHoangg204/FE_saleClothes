@@ -25,19 +25,19 @@ function App() {
   const location = useLocation();
   const dispatch = useDispatch();
 
-  //luu username
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      try {
-        const decoded = jwtDecode(token);
-        const username = decoded.sub || decoded.username;
-        dispatch(setUsername(username));
-      } catch (err) {
-        console.error('Invalid token:', err);
-      }
-    }
-  }, [dispatch]);
+  // //luu username
+  // useEffect(() => {
+  //   const token = localStorage.getItem('token');
+  //   if (token) {
+  //     try {
+  //       const decoded = jwtDecode(token);
+  //       const username = decoded.sub || decoded.username;
+  //       dispatch(setUsername(username));
+  //     } catch (err) {
+  //       console.error('Invalid token:', err);
+  //     }
+  //   }
+  // }, [dispatch]);
 
   useEffect(() => {
     document.querySelector("html").style.scrollBehavior = "auto";

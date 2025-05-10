@@ -23,12 +23,20 @@ function Order() {
     const [shippingFee, setShippingFee] = useState(0);
     const [totalAmount, setTotalAmount] = useState(0);
     const [orderDetails, setOrderDetails] = useState([])
+    const [size, setSize] = useState(null)
+    const [username, setUsername] = useState(null)
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const username = useSelector((state) => state.auth.username);
+    
 
     useEffect(() => {
+        const accessToken = localStorage.getItem("token")
+        if(accessToken) {
+            const decodedToken = jwtDecode(accessToken)
+            setUsername(decodedToken.sub)
+        }
+
         resetAddress();
     }, []);
 
@@ -44,6 +52,8 @@ function Order() {
                 username: username,
                 addressId: dataAddress.id,
                 orderDetails: orderDetails,
+
+                // size: size,
             };
             
             switch(paymentMethod) {
@@ -71,6 +81,8 @@ function Order() {
     //Handle call api create order
     const handleApiCreateOrder = async(data) => {
         try {
+            
+            
             await handleOrder(data); // gọi API tạo đơn hàng
             navigate('/thank-you'); // chuyển hướng sau khi thành công
         } catch (error) {
@@ -119,6 +131,7 @@ function Order() {
         setOrderDetails((prev) => [...prev,data])
         
     };
+
 
     //validate address information
     const validateAddress = (address) => {
@@ -266,7 +279,7 @@ function Order() {
                         </div>
                         {/* Product list */}
                         <div>
-                            <ProductList  handleGetDataProductInCart={handleGetDataProductInCart}/>
+                            <ProductList  handleGetDataProductInCart={handleGetDataProductInCart} setSize={setSize}/>
                         </div>
                     </div>
 

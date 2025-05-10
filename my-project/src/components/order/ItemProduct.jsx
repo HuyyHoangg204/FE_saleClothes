@@ -25,6 +25,7 @@ function ItemProduct({ item, onLoaded}) {
                 productVariant: {
                     variant_id: variantId,
                 },
+                size: key[1]
             });
 
             const price = result?.result.base_price;

@@ -912,3 +912,67 @@ export const getDataProductToShowOrder = async (variant_id,username) => {
        
     }
 }
+
+//Get all order for page admin
+export const getAllOrder = async (page) => {
+    try{
+        const accessToken = localStorage.getItem('token')
+        
+        if(!accessToken){
+            throw new Error("Không tìm thấy token!")
+        }
+        const res = (await axiosInstance.get(`${REST_API_V1_URL}/orders?page=${page}`, config))
+        return res.data.result
+        }
+    catch(err){
+        console.log(err)
+       
+    }
+}
+// Lấy dữ liệu cho chức năng chỉnh sửa đơn hàng
+export const getDataOrderToEdit= async (orderId) => {
+    try{
+        const accessToken = localStorage.getItem('token')
+        if(!accessToken){
+            throw new Error("Không tìm thấy token!")
+        }
+        const res = (await axiosInstance.get(`${REST_API_V1_URL}/order-edit/${orderId}`, config))
+        return res.data.result
+        }
+    catch(err){
+        console.log(err)
+       
+    }
+}
+
+// Duyệt đơn hàng
+export const updateStatusOrder= async (orderId, data) => {
+    try{
+        const accessToken = localStorage.getItem('token')
+        if(!accessToken){
+            throw new Error("Không tìm thấy token!")
+        }
+        const res = (await axiosInstance.put(`${REST_API_V1_URL}/order-status/${orderId}`,data, config))
+        toast.success("Cập nhật đơn hàng thành công!")
+        }
+    catch(err){
+        console.log(err)
+        toast.error("Cập nhật đơn hàng không thành công!")
+       
+    }
+}
+// Get all data for feature order detail
+export const getAllDataDetail= async (orderId) => {
+    try{
+        const accessToken = localStorage.getItem('token')
+        if(!accessToken){
+            throw new Error("Không tìm thấy token!")
+        }
+        const res = (await axiosInstance.get(`${REST_API_V1_URL}/order-detail/${orderId}`, config))
+        return res.data.result
+        }
+    catch(err){
+        console.log(err)
+       
+    }
+}

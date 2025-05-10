@@ -315,6 +315,11 @@ function Sidebar({
                           <li className="mb-1 last:mb-0">
                             <NavLink
                               end
+                              to={"/admin"}
+                              onClick={() => {
+                                setActiveItem("order");
+                                setCurrentComponent("order");
+                              }} 
                               className={
                                 "block transition duration-150 truncate " +
                                 (activeItem === "orders"

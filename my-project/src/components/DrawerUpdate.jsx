@@ -94,18 +94,26 @@ function DrawerUpdate({
     };
     //Handle click choose color =================================================================
     const handleClickChooseColor = async () => {
-        try {
-            const data = await getAllColorProduct();
-            setColors(data.result);
-        } catch (error) {}
-    };
+    try {
+        const data = await getAllColorProduct();
+        if (data) {
+            setColors(data);
+        } else {
+            setColors([]); // fallback nếu không có dữ liệu
+        }
+    } catch (error) {
+        console.error('Error fetching color product:', error);
+        setColors([]);
+    }
+};
+
     useEffect(() => {
         handleClickChooseColor();
     }, []);
     //Handle click update product =================================================================
-    // useEffect(() => {
-    //     console.log(typeProduct)
-    // }, [typeProduct])
+    useEffect(() => {
+        console.log(colors)
+    }, [colors])
     const handleClickUpdateProduct = () => {
         const newProduct = {
             name: productName,
