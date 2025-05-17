@@ -28,24 +28,22 @@ function Dashboard() {
 
 
 
-  // useEffect(() => {
-  //   const storedToken = localStorage.getItem("token"); // Lấy token từ localStorage
+  useEffect(() => {
+    const storedToken = localStorage.getItem("token"); // Lấy token từ localStorage
 
-  //   if (!storedToken) {
-  //     setToken(null);
-  //     setIsLoading(false);
-  //   } else {
-  //     try {
-  //       setIsLoading(false)
-  //       //Giai ma token
-  //      const decodedToken = jwtDecode(storedToken)
-  //      setRole(decodedToken.scope)
-  //       console.log(role);
-  //     } catch (error) {}
-  //     setToken(storedToken);
-  //     setIsLoading(false);
-  //   }
-  // }, [navigate]);
+    if (!storedToken) {
+    navigate("/login")
+    } else {
+      
+       const decodedToken = jwtDecode(storedToken)
+      if(decodedToken.scope != "ADMIN") {
+        navigate("/login")
+      }
+      
+        
+      
+    }
+  }, []);
 
   //render
   const renderComponent = () => {

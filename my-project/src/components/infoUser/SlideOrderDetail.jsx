@@ -3,12 +3,13 @@ import { format } from 'date-fns';
 import axiosInstance from '../../redux/axiosConfig';
 import { getDataProductToShowOrder } from '../../redux/apiRequest';
 import { useDispatch, useSelector } from 'react-redux';
+import { jwtDecode } from 'jwt-decode';
 function OrderDetails({ orderId, onBack, data }) {
     // Dữ liệu
     const [orderDetail, setOrderDetail] = useState({});
     const [productInfoList, setProductInfoList] = useState([]);
 
-    const username = useSelector((state) => state.auth?.username);
+    const username = jwtDecode(localStorage.getItem("token")).sub;
 
     useEffect(() => {
         const fetchAllProductData = async () => {
@@ -69,9 +70,6 @@ function OrderDetails({ orderId, onBack, data }) {
                     <h3 className="font-bold mb-2">Theo dõi đơn hàng</h3>
                     <p className="text-gray-700">Trạng thái: {statusMap[orderDetail?.status] || 'Không xác định'}</p>
                     <ul className="list-inside list-disc text-gray-700">
-                        {/* <li>Đã giao cho đơn vị vận chuyển (20:44, 01/11/2024)</li>
-                        <li>Đang xử lý (20:44, 01/11/2024)</li>
-                        <li>Đặt hàng thành công (20:44, 01/11/2024)</li> */}
                         {orderDetail?.orderStatusHistories?.map((statusHistory, index) => (
                             <li key={index}>
                                 {statusHistory.description}(

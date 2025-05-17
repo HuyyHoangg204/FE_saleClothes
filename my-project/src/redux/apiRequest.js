@@ -976,3 +976,68 @@ export const getAllDataDetail= async (orderId) => {
        
     }
 }
+
+// Dashboard ====================================================================================
+// Get data fulldaily
+export const getAllDataFullDaily= async () => {
+    try{
+        const accessToken = localStorage.getItem('token')
+        if(!accessToken){
+            throw new Error("Không tìm thấy token!")
+        }
+        const res = (await axiosInstance.get(`${REST_API_V1_URL}/revenue-fullDaily`, config))
+        return res.data.result
+        }
+    catch(err){
+        console.log(err)
+       
+    }
+}
+
+// Get data weekly
+export const getAllDataWeekly= async () => {
+    try{
+        const accessToken = localStorage.getItem('token')
+        if(!accessToken){
+            throw new Error("Không tìm thấy token!")
+        }
+        const res = (await axiosInstance.get(`${REST_API_V1_URL}/revenue-weekly`, config))
+        return res.data.result
+        }
+    catch(err){
+        console.log(err)
+       
+    }
+}
+
+// Get data monthly
+export const getAllDataMonthly= async () => {
+    try{
+        const accessToken = localStorage.getItem('token')
+        if(!accessToken){
+            throw new Error("Không tìm thấy token!")
+        }
+        const res = (await axiosInstance.get(`${REST_API_V1_URL}/revenue-monthly`, config))
+        return res.data.result
+        }
+    catch(err){
+        console.log(err)
+       
+    }
+}
+
+// Get data yearly
+export const getAllDataYearly= async () => {
+    try{
+        const accessToken = localStorage.getItem('token')
+        if(!accessToken){
+            throw new Error("Không tìm thấy token!")
+        }
+        const res = (await axiosInstance.get(`${REST_API_V1_URL}/revenue-yearly`, config))
+        return res.data.result
+        }
+    catch(err){
+        console.log(err)
+       
+    }
+}

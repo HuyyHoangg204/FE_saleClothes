@@ -287,7 +287,7 @@ function OrderManagement({ setCurrentComponent,setOrderId }) {
                                                 >
                                                     <VisibilityIcon />
                                                 </button>
-                                                {order.status !== 'SHIPPED' && order.status !== 'DELIVERED' && (
+                                                { order.status !== 'DELIVERED' && (
                                                     <button
                                                         className="text-gray-500 hover:text-gray-900"
                                                         onClick={() => {

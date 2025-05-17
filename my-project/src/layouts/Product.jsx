@@ -395,11 +395,7 @@ function Product() {
                     <div className="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
                         <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
                             <div className="flex-1 flex items-center space-x-2">
-                                <h5>
-                                    <span className="text-gray-500">All Products:</span>
-                                    <span className="dark:text-white">123456</span>
-                                </h5>
-                                <h5 className="text-gray-500 dark:text-gray-400 ml-1">1-100 (436)</h5>
+                                
                                 <button type="button" className="group" data-tooltip-target="results-tooltip">
                                     <svg
                                         aria-hidden="true"
@@ -414,16 +410,9 @@ function Product() {
                                             clipRule="evenodd"
                                         />
                                     </svg>
-                                    <span className="sr-only">More info</span>
+                                   
                                 </button>
-                                <div
-                                    id="results-tooltip"
-                                    role="tooltip"
-                                    className="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700"
-                                >
-                                    Showing 1-100 of 436 results
-                                    <div className="tooltip-arrow" data-popper-arrow=""></div>
-                                </div>
+                             
                             </div>
                             <div className="flex-shrink-0 flex flex-col items-start md:flex-row md:items-center lg:justify-end space-y-3 md:space-y-0 md:space-x-3">
                                 <button
@@ -472,7 +461,7 @@ function Product() {
                                         <input
                                             type="text"
                                             id="simple-search"
-                                            placeholder="Search for products"
+                                            placeholder="Tìm kiếm sản phẩm"
                                             required=""
                                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                                         />
@@ -499,7 +488,7 @@ function Product() {
                                             d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
                                         />
                                     </svg>
-                                    Add product
+                                    Thêm sản phẩm
                                 </button>
                                 <button
                                     id="filterDropdownButton"
@@ -520,7 +509,7 @@ function Product() {
                                             clipRule="evenodd"
                                         />
                                     </svg>
-                                    Filter options
+                                    Lọc
                                     <svg
                                         className="-mr-1 ml-1.5 w-5 h-5"
                                         fill="currentColor"
@@ -560,7 +549,7 @@ function Product() {
                                         </div>
                                         <div className="pt-3 pb-2">
                                             <label htmlFor="input-group-search" className="sr-only">
-                                                Search
+                                                TÌm kiếm
                                             </label>
                                             <div className="relative">
                                                 <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
@@ -1265,27 +1254,7 @@ function Product() {
                                     </div>
                                 )}
                                 <div className="flex items-center space-x-3 w-full md:w-auto">
-                                    <button
-                                        id="actionsDropdownButton"
-                                        data-dropdown-toggle="actionsDropdown"
-                                        className="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
-                                        type="button"
-                                    >
-                                        Actions
-                                        <svg
-                                            className="-mr-1 ml-1.5 w-5 h-5"
-                                            fill="currentColor"
-                                            viewBox="0 0 20 20"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            aria-hidden="true"
-                                        >
-                                            <path
-                                                clipRule="evenodd"
-                                                fillRule="evenodd"
-                                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                            />
-                                        </svg>
-                                    </button>
+                                    
                                     <div
                                         id="actionsDropdown"
                                         className="hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600"
