@@ -1619,7 +1619,7 @@ function Product() {
                     subCategory={subCategory}
                     closeModal={closeModal}
                     handleCategoryChange={handleCategoryChange}
-                    dmcMa={dmcMa}t
+                    dmcMa={dmcMa}
                     fetchProduct={fetchProduct}
                     showAddImage={showAddImage}
                     selectedProductId = {selectedProductId}

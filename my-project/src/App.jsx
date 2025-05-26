@@ -19,6 +19,7 @@ import { useDispatch } from "react-redux";
 import { setUsername } from "./redux/authSlice.js";
 import { jwtDecode } from "jwt-decode";
 import OrderSuccess from "./layouts/OrderSuccess.jsx";
+import Chatbot from "./modal/Chatbot/Chatbot.jsx";
 
 
 function App() {
@@ -61,6 +62,7 @@ function App() {
         <Route path= "/thank-you" element= {<OrderSuccess/>}/>
       </Routes>
       <ToastContainer position="top-right" autoClose={3000} />
+      <Chatbot/>
     </div>
   );
 }

@@ -11,6 +11,7 @@ import SectionCarouselFlashSale from '../../partials/HomeSectionCarousel/Section
 import EndSection from '../../partials/EndSection/EndSection';
 import Footer from '../../partials/Footer/Footer';
 
+
 function Home() {
     return (
         <Fragment>
