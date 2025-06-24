@@ -5,7 +5,7 @@ import MainHeader from '../../partials/MainHeader/MainHeader.jsx';
 import Footer from '../../partials/Footer/Footer.jsx';
 import AddressInformation from '../../components/order/AddressInfomation.jsx';
 import AddressBook from '../../components/order/AddressBook.jsx';
-import { getAllAddressByUsername, handleOrder } from '../../redux/apiRequest.js';
+import { createPayment, getAllAddressByUsername, handleOrder } from '../../redux/apiRequest.js';
 import { jwtDecode } from 'jwt-decode';
 import { useDispatch, useSelector } from 'react-redux';
 import DeliveryMethod from '../../components/order/DeliveryMethod.jsx';
@@ -14,6 +14,7 @@ import PaymentMethod from '../../components/order/PaymentMethod.jsx';
 import ProductList from '../../components/order/ProductList.jsx';
 import OrderDetail from '../../components/order/OrderDetail.jsx';
 import { useNavigate } from 'react-router-dom';
+import Loading from '../../components/Loading.jsx';
 
 function Order() {
     const [selectedAddress, setSelectedAddress] = useState(true);
@@ -25,6 +26,7 @@ function Order() {
     const [orderDetails, setOrderDetails] = useState([])
     const [size, setSize] = useState(null)
     const [username, setUsername] = useState(null)
+    const [loading, setLoading] = useState(false)
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -41,43 +43,66 @@ function Order() {
     }, []);
 
     //Handle feature order
-    const handleFeatOrder = () => {
-        if (validateAddress(dataAddress)) {
-            const newData = {
-                totalAmount: totalAmount,
-                paymentMethod: paymentMethod,
-                paymentStatus: 'UNPAID',
-                deliveryMethod: deliveryMethod,
-                shippingFee: shippingFee,
-                username: username,
-                addressId: dataAddress.id,
-                orderDetails: orderDetails,
-
-                // size: size,
-            };
-            
-            switch(paymentMethod) {
-                case "COD":
-                    handleApiCreateOrder(newData)
-                    //To do
-                    break;
-                case "BANK_TRANSFER":
-                    //To do
-                    break;
-                case "E_WALLET":
-                    //To do
-                    break;
-                case "CREDIT_CARD":
-                    //To do
-                    break;
-                case "VNPAY":
-                    //To do
-                    break;
-                default: 
-                toast.error("Phương thức thanh toán không hợp lệ");
-            }
+    const handleFeatOrder = async () => {
+        if (!validateAddress(dataAddress)) return;
+      
+        setLoading(true);
+      
+        const newData = {
+          totalAmount,
+          paymentMethod,
+          paymentStatus: "UNPAID",
+          deliveryMethod,
+          shippingFee,
+          username,
+          addressId: dataAddress.id,
+          orderDetails,
+        };
+      
+        try {
+          switch (paymentMethod) {
+            case "COD":
+              await handleApiCreateOrder(newData);
+              break;
+      
+            case "NCB":
+              const paymentUrl = await createPayment(totalAmount, "NCB");
+      
+              // Optional: thêm delay nhỏ để người dùng thấy loading
+              setTimeout(() => {
+                window.location.href = paymentUrl; // ✅ Chuyển hướng sau khi loading hiển thị
+              }, 1000);
+              break;
+      
+            case "E_WALLET":
+              // TODO
+              break;
+      
+            case "CREDIT_CARD":
+              // TODO
+              break;
+      
+            case "VNPAYQR":
+              // TODO
+              const paymentUrlQrcode = await createPayment(totalAmount, "VNPAYQR");
+      
+              // Optional: thêm delay nhỏ để người dùng thấy loading
+              setTimeout(() => {
+                window.location.href = paymentUrlQrcode; // ✅ Chuyển hướng sau khi loading hiển thị
+              }, 1000);
+              break;
+      
+            default:
+              toast.error("Phương thức thanh toán không hợp lệ");
+          }
+        } catch (error) {
+          console.error("Lỗi khi xử lý đơn hàng:", error);
+          toast.error("Có lỗi xảy ra khi đặt hàng.");
+          setLoading(false); // chỉ tắt loading khi không redirect
         }
-    };
+      };
+      
+      
     //Handle call api create order
     const handleApiCreateOrder = async(data) => {
         try {
@@ -193,6 +218,10 @@ function Order() {
     const handleChangeAddress = (checked) => {
         setSelectedAddress(checked);
     };
+
+    if(loading) {
+        return <Loading/>
+    }
     return (
         <div className="w-[100%] bg-[#f5f5f5]">
             {/* Header */}

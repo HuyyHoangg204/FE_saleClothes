@@ -10,14 +10,16 @@ function PaymentMethod({ handleGetDataPaymentMethod }) {
 
     useEffect(() => {
         handleGetDataPaymentMethod(selectedOption);
+        console.log(selectedOption);
+        
     }, [selectedOption]);
 
     const paymentMethods = [
         { value: 'COD', label: 'Thanh toán khi nhận hàng' },
         { value: 'E_WALLET', label: 'Thanh toán bằng Momo' },
-        { value: 'BANK_TRANSFER', label: 'Thanh toán bằng ATM' },
+        { value: 'NCB', label: 'Thanh toán bằng ATM' },
         { value: 'CREDIT_CARD', label: 'Thanh toán bằng thẻ tín dụng' },
-        { value: 'VNPAY', label: 'Thanh toán bằng ví VNPAY' },
+        { value: 'VNPAYQR', label: 'Thanh toán bằng ví VNPAY' },
     ];
 
     return (

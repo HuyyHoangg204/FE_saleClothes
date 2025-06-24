@@ -53,11 +53,14 @@ import {
 import { config } from 'react-transition-group';
 import { addProductToCartFailed, addProductToCartStart, addProductToCartSuccess } from './cartSlice';
 
+
 //  const REST_AUTH_BASE_URL = "http://51.79.167.161:8081/auth";
 //  const REST_API_BASE_URL = "http://51.79.167.161:8081/api";
 const REST_AUTH_BASE_URL = import.meta.env.VITE_REST_AUTH_BASE_URL;
 const REST_API_BASE_URL = import.meta.env.VITE_REST_API_BASE_URL;
 const REST_API_V1_URL = import.meta.env.VITE_REST_API_V1_URL;
+
+
 
 //get cookie
 const getCookie = (name) => {
@@ -1059,12 +1062,18 @@ export const getResponseChatbot = async (question) => {
   }
 };
 // Payment
+// Payment
+// Payment
 export const createPayment = async (amount, bankCode) => {
     try {
-        const res = await axiosInstance.get(`${REST_API_V1_URL}/payment/create_payment?amount=${amount}&bankCode=${bankCode}&language=vn`);
-        return res.data;
+      const res = await axiosInstance.get(
+        `${REST_API_V1_URL}/payment/create_payment?amount=${amount}&bankCode=${bankCode}&language=vn`
+      );
+      const urlPayment = res.data.data;
+      return urlPayment; // ✅ Chỉ return URL
     } catch (err) {
-        console.log(err);
-        
+      console.log(err);
+      throw err;
     }
-}
+  };
+  
